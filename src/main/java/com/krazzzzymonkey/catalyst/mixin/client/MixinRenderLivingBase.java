@@ -1,6 +1,10 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
+import com.krazzzzymonkey.catalyst.events.RenderModelEntityLivingEvent;
+import com.krazzzzymonkey.catalyst.managers.FriendManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.render.ESP;
+import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.model.ModelBase;
@@ -21,6 +25,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import static com.krazzzzymonkey.catalyst.managers.ModuleManager.EVENT_MANAGER;
+
 
 @Mixin(value = RenderLivingBase.class, priority = 9998)
 public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends MixinRender<T> {
@@ -37,17 +43,10 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
             boolean applyGradient = true;
 
             Method getFriends = null;
-            ArrayList<String> friendsList = new ArrayList<>();
-            try {
-                Class[] noParams = {};
-                getFriends = ModuleManager.getMixinProxyClass().getMethod("getFriendList", noParams);
-                friendsList = (ArrayList<String>) getFriends.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+            ArrayList<String> friendsList = FriendManager.friendsList;
 
             if (friendsOnly && !friendsList.contains(entity.getName())) applyGradient = false;
-            if(entity == Minecraft.getMinecraft().player)applyGradient = false;
+            if (entity == Minecraft.getMinecraft().player) applyGradient = false;
             //System.out.println("Passed the friendsOnly Check : " + applyGradient);
 //            if (startDistance > Minecraft.getMinecraft().player.getDistance(entity)) applyGradient = false;
 //            System.out.println("Passed the distance check : " + applyGradient);
@@ -57,7 +56,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
                 //System.out.println("Applying Gradient");
                 float distancePercentage = (float) (Minecraft.getMinecraft().player.getDistance(entity) / startDistance);
                 float alpha = (float) (minOpacity + distancePercentage * (1 - minOpacity));
-                GL11.glColor4f(1,1,1, alpha);
+                GL11.glColor4f(1, 1, 1, alpha);
             }
 
 
@@ -78,14 +77,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
                     GL11.glColor4f(ModuleManager.getModule("Chams").getColorValue("SingleColor").getRed() / 255f, ModuleManager.getModule("Chams").getColorValue("SingleColor").getGreen() / 255f, ModuleManager.getModule("Chams").getColorValue("SingleColor").getBlue() / 255f, 1f);
                 } else {
                     Method getRainbow;
-                    Color rainbow = new Color(-1);
-                    try {
-                        Class[] noParams = {};
-                        getRainbow = ModuleManager.getMixinProxyClass().getMethod("getRainbow", noParams);
-                        rainbow = (Color) getRainbow.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-                    } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                        e.printStackTrace();
-                    }
+                    Color rainbow = ColorUtils.rainbow();
                     GL11.glColor4f(rainbow.getRed() / 255f, rainbow.getGreen() / 255f, rainbow.getBlue() / 255f, 1f);
                 }
                 GL11.glPolygonOffset(1.0F, -4000000F);
@@ -97,12 +89,12 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
     private void renderModelHook(ModelBase modelBase, Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 
 
-        try {
-            Class[] params = {ModelBase.class, Entity.class, float.class, float.class, float.class, float.class, float.class, float.class};
-            ModuleManager.getMixinProxyClass().getMethod("postRenderModelEntityLivingEvent", params).invoke(ModuleManager.getMixinProxyClass(), modelBase, entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+        final RenderModelEntityLivingEvent event = new RenderModelEntityLivingEvent((EntityLivingBase) entityIn, modelBase, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+        EVENT_MANAGER.post(event);
+        if (!event.isCancelled()) {
+            event.getModelBase().render(entityIn, event.getLimbSwing(), event.getLimbSwingAmount(), event.getAgeInTicks(), event.getNetHeadYaw(), event.getHeadPitch(), event.getScaleFactor());
         }
+
 
         boolean valid = !(entityIn instanceof EntityPlayer) || ModuleManager.getModule("ESP").isToggledValue("Players");
 
@@ -112,10 +104,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
             valid = false;
 
         if (ModuleManager.getModule("ESP").isToggled() && ModuleManager.getModule("ESP").isToggledMode("ESPMode", "WireFrame")) {
-
-
             if (valid) {
-
                 GL11.glPushMatrix();
                 GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
                 GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
@@ -127,14 +116,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 if (ModuleManager.getModule("ESP").isToggledValue("ColorStartRainbow")) {
                     Method getRainbow;
-                    Color rainbow = new Color(-1);
-                    try {
-                        Class[] noParams = {};
-                        getRainbow = ModuleManager.getMixinProxyClass().getMethod("getRainbow", noParams);
-                        rainbow = (Color) getRainbow.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-                    } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                        e.printStackTrace();
-                    }
+                    Color rainbow = ColorUtils.rainbow();
                     GL11.glColor4f(rainbow.getRed() / 255f, rainbow.getGreen() / 255f, rainbow.getBlue() / 255f, 1);
                 } else {
                     GL11.glColor4f(ModuleManager.getModule("ESP").getColorValue("Color").getRed() / 255f, ModuleManager.getModule("ESP").getColorValue("Color").getGreen() / 255f, ModuleManager.getModule("ESP").getColorValue("Color").getBlue() / 255f, 255);
@@ -152,87 +134,21 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
             Minecraft.getMinecraft().gameSettings.fancyGraphics = false;
             GlStateManager.resetColor();
             final Color color = ModuleManager.getModule("ESP").getColorValue("Color");
-
-            try {
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Class[] params = {float.class};
-                ModuleManager.getMixinProxyClass().getMethod("renderOne", params).invoke(ModuleManager.getMixinProxyClass(), (float) ModuleManager.getModule("ESP").getDoubleValue("LineWidth"));
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
+            ESP.setColor(color);
+            ESP.renderOne(ModuleManager.getModule("ESP").getIntegerValue("LineWidth"));
             modelBase.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            try {
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Class[] params = {};
-                ModuleManager.getMixinProxyClass().getMethod("renderTwo", params).invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
+            ESP.setColor(color);
+            ESP.renderTwo();
             modelBase.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            try {
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Class[] params = {};
-                ModuleManager.getMixinProxyClass().getMethod("renderThree", params).invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
+            ESP.setColor(color);
+            ESP.renderThree();
             modelBase.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            try {
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("renderFour", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
+            ESP.setColor(color);
+            ESP.renderFour(color);
             modelBase.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            try {
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Class[] params = {};
-                ModuleManager.getMixinProxyClass().getMethod("renderFive", params).invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), Color.WHITE);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            ESP.setColor(color);
+            ESP.renderFive();
+            ESP.setColor(Color.WHITE);
 
         }
 
@@ -288,6 +204,6 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
                 GL11.glPolygonOffset(1.0F, 4000000F);
             }
         }
-        GL11.glColor4f(1,1,1,1);
+        GL11.glColor4f(1, 1, 1, 1);
     }
 }

@@ -13,7 +13,7 @@ public abstract class MixinAbstractHorse {
 	  private void isHorseSaddled(CallbackInfoReturnable<Boolean> callback)
 	  {
 	    if (ModuleManager.getModule("EntityControl").isToggled()) {
-	      callback.setReturnValue(Boolean.valueOf(true));
+	      callback.setReturnValue(Boolean.TRUE);
 	    }
 	  }
 }

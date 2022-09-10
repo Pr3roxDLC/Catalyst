@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.render.XRay;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockFluidRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -18,15 +19,9 @@ public class MixinBlockFluidRenderer {
 
     @Inject(method = {"renderFluid"}, at = {@At("HEAD")}, cancellable = true)
     public void renderFluid(IBlockAccess blockAccess, IBlockState blockStateIn, BlockPos blockPosIn, BufferBuilder bufferBuilderIn, CallbackInfoReturnable<Boolean> cir) {
-        Method isInList = null;
-    try {
-        isInList = ModuleManager.getMixinProxyClass().getMethod("isInList", net.minecraft.block.Block.class);
-
-        if (ModuleManager.getModule("XRay").isToggled() && !Boolean.TRUE.equals(isInList.invoke(ModuleManager.getMixinProxyClass(), blockStateIn.getBlock()))) {
-            cir.setReturnValue(false);
-            cir.cancel();
-        }
-    } catch (Exception ignored){}
-
+            if (ModuleManager.getModule("XRay").isToggled()) {
+                cir.setReturnValue(XRay.blocks.contains(blockStateIn.getBlock()));
+                cir.cancel();
+            }
     }
 }

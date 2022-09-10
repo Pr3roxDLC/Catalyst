@@ -3,6 +3,8 @@ package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.google.common.base.Predicate;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.misc.NoEntityTrace;
+import com.krazzzzymonkey.catalyst.module.modules.render.AspectRatio;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.Entity;
@@ -35,17 +37,8 @@ public class MixinEntityRenderer {
     @Redirect(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;"))
     public List<Entity> getEntitiesInAABBexcluding(WorldClient worldClient, Entity entityIn, AxisAlignedBB boundingBox, Predicate predicate) {
         if (ModuleManager.getModule("NoEntityTrace").isToggled()) {
-
-
-            Method shouldEnable;
-            Class[] noParams = {};
-            try {
-                shouldEnable = ModuleManager.getMixinProxyClass().getMethod("shouldEnable", noParams);
-                if (Boolean.TRUE.equals(shouldEnable.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null))) {
-                    return new ArrayList<>();
-                }
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-                e.printStackTrace();
+            if (NoEntityTrace.shouldEnable) {
+                return new ArrayList<>();
             }
         }
         return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
@@ -60,46 +53,22 @@ public class MixinEntityRenderer {
 
     @Redirect(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))
     private void projectInject0(float fovy, float aspect, float zNear, float zFar) {
-
-        try {
-            Class[] params = {float.class, float.class, float.class, float.class, boolean.class};
-            ModuleManager.getMixinProxyClass().getMethod("project", params).invoke(ModuleManager.getMixinProxyClass(), fovy, aspect, zNear, zFar, false);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        AspectRatio.project(fovy, aspect, zNear, zFar, false);
     }
 
     @Redirect(method = "renderHand", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))
     private void projectInject1(float fovy, float aspect, float zNear, float zFar) {
-
-        try {
-            Class[] params = {float.class, float.class, float.class, float.class, boolean.class};
-            ModuleManager.getMixinProxyClass().getMethod("project", params).invoke(ModuleManager.getMixinProxyClass(), fovy, aspect, zNear, zFar, true);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        AspectRatio.project(fovy, aspect, zNear, zFar, true);
     }
 
     @Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))
     private void projectInject2(float fovy, float aspect, float zNear, float zFar) {
-
-        try {
-            Class[] params = {float.class, float.class, float.class, float.class, boolean.class};
-            ModuleManager.getMixinProxyClass().getMethod("project", params).invoke(ModuleManager.getMixinProxyClass(), fovy, aspect, zNear, zFar, false);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        AspectRatio.project(fovy, aspect, zNear, zFar, false);
     }
 
     @Redirect(method = "renderCloudsCheck", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"))
     private void projectInject3(float fovy, float aspect, float zNear, float zFar) {
-
-        try {
-            Class[] params = {float.class, float.class, float.class, float.class, boolean.class};
-            ModuleManager.getMixinProxyClass().getMethod("project", params).invoke(ModuleManager.getMixinProxyClass(), fovy, aspect, zNear, zFar, false);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        AspectRatio.project(fovy, aspect, zNear, zFar, false);
     }
 
 

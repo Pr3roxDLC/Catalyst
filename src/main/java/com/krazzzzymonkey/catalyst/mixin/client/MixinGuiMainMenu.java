@@ -1,5 +1,6 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
+import com.krazzzzymonkey.catalyst.Main;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
 
 import com.krazzzzymonkey.catalyst.utils.visual.GLSLSandboxShader;
@@ -75,12 +76,12 @@ public class MixinGuiMainMenu extends GuiScreen {
     void constructorReturn(CallbackInfo ci) {
         File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "mainmenu" + File.separator + "minecraft.png");
         try {
-            if(ModuleManager.getModule("CustomMainMenu").isToggledValue("CustomLogo") && ModuleManager.getModule("CustomMainMenu").isToggled()) {
+            if (ModuleManager.getModule("CustomMainMenu").isToggledValue("CustomLogo") && ModuleManager.getModule("CustomMainMenu").isToggled()) {
                 MINECRAFT_TITLE_TEXTURES = Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file)));
-            }else{
+            } else {
                 MINECRAFT_TITLE_TEXTURES = new ResourceLocation("textures/gui/title/minecraft.png");
             }
-            } catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -88,17 +89,8 @@ public class MixinGuiMainMenu extends GuiScreen {
             //TODO replace this with a ReflectionsCall to ModuleManger for Loader Compatability
             //System.out.println(file.getAbsolutePath());
             //FUCK ME, took me 2 hrs to figure out why this wasnt compiling, turns out i was trying to compile the PNG from file because i had the wrong variable
-            Method getShaderDir;
-            File shaderDir;
-            try {
-                getShaderDir = ModuleManager.getMixinProxyClass().getMethod("getShaderDir");
-                shaderDir = (File) getShaderDir.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-                this.backgroundShader = new GLSLSandboxShader(shaderDir.getAbsolutePath() + File.separator + ModuleManager.getModule("CustomMainMenu").getToggledMode("Shader").getName());
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-
-
+            File shaderDir = new File(String.format("%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Shader", File.separator));
+            this.backgroundShader = new GLSLSandboxShader(shaderDir.getAbsolutePath() + File.separator + ModuleManager.getModule("CustomMainMenu").getToggledMode("Shader").getName());
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load backgound shader", e);
         }

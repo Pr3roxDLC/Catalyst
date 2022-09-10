@@ -15,7 +15,6 @@ import com.krazzzzymonkey.catalyst.module.modules.gui.HudEditor;
 import com.krazzzzymonkey.catalyst.module.modules.hud.*;
 import com.krazzzzymonkey.catalyst.module.modules.misc.*;
 import com.krazzzzymonkey.catalyst.module.modules.movement.*;
-import com.krazzzzymonkey.catalyst.module.modules.other.MixinProxy;
 import com.krazzzzymonkey.catalyst.module.modules.player.*;
 import com.krazzzzymonkey.catalyst.module.modules.render.*;
 import com.krazzzzymonkey.catalyst.module.modules.render.XRay;
@@ -27,15 +26,9 @@ import dev.tigr.simpleevents.listener.EventHandler;
 import dev.tigr.simpleevents.listener.EventListener;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 
 public class ModuleManager {
     public static dev.tigr.simpleevents.EventManager EVENT_MANAGER = new dev.tigr.simpleevents.EventManager(); // Create new EventManager
@@ -247,7 +240,7 @@ public class ModuleManager {
     public static Modules getModule(String name) {
         Modules module = null;
         for (Modules m : getModules()) {
-            if (m.getModuleName().equals(name)) {
+            if (m.getModuleName().equalsIgnoreCase(name)) {
                 module = m;
             }
         }
@@ -346,7 +339,6 @@ public class ModuleManager {
 
 
 
-
     public static Class getModuleClass(String clazz) {
         for(Modules m : ModuleManager.getModules()){
             if(m.getModuleName().equals(clazz)){
@@ -355,10 +347,4 @@ public class ModuleManager {
         }
         return null;
     }
-
-
-    public static Class getMixinProxyClass(){
-        return MixinProxy.class;
-    }
-
 }

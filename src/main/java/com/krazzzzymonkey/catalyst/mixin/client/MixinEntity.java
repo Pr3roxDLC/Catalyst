@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.world.Scaffold;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,15 +30,8 @@ public class MixinEntity {
     @Redirect(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaking()Z"))
     public boolean isSneaking(Entity entity) {
         if (ModuleManager.getModule("SafeWalk").isToggled()) return true;
-        try {
-            Class[] params = {};
-            Method getCancelSneak = ModuleManager.getMixinProxyClass().getMethod("getCancelSneak", params);
-
-            if (ModuleManager.getModule("Scaffold").isToggled() && Boolean.TRUE.equals(getCancelSneak.invoke(ModuleManager.getMixinProxyClass()))) {
-                return false;
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+        if (ModuleManager.getModule("Scaffold").isToggled() && Scaffold.cancelSneak) {
+            return false;
         }
         return (entity.isSneaking());
     }

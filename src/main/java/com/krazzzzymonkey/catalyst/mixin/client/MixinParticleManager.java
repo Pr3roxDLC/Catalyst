@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.misc.Sounds;
 import net.minecraft.client.particle.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,12 +18,7 @@ public class MixinParticleManager {
 
         if (ModuleManager.getModule("Sounds").isToggled()) {
             if (particle instanceof ParticleExplosionHuge) {
-                try {
-                    Class[] params = {};
-                    ModuleManager.getMixinProxyClass().getMethod("onExplosion", params).invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                Sounds.onExplosion();
                 return;
             }
         }

@@ -1,6 +1,8 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.render.ESP;
+import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelEnderCrystal;
@@ -47,16 +49,7 @@ public class MixinModelEnderCrystal extends ModelBase {
             this.base.render(scale);
         }
 
-        Method getRainbow;
-        Color rainbow = new Color(-1);
-        try {
-            Class[] noParams = {};
-            getRainbow = ModuleManager.getMixinProxyClass().getMethod("getRainbow", noParams);
-            rainbow = (Color) getRainbow.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-
+        Color rainbow = ColorUtils.rainbow();
         if (ModuleManager.getModule("ESP").isToggled() && ModuleManager.getModule("ESP").isToggledMode("ESPMode", "WireFrame")) {
 
             boolean valid = !(entityIn instanceof EntityPlayer) || ModuleManager.getModule("ESP").isToggledValue("Players");
@@ -143,20 +136,8 @@ public class MixinModelEnderCrystal extends ModelBase {
             Color color = ModuleManager.getModule("ESP").getColorValue("Color");
             if(ModuleManager.getModule("ESP").isToggledValue("ColorRainbow"))color = rainbow;
 
-
-            try{
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            try{
-                Class[] params = {float.class};
-                ModuleManager.getMixinProxyClass().getMethod("renderOne", params).invoke(ModuleManager.getMixinProxyClass(), (float) ModuleManager.getModule("ESP").getDoubleValue("LineWidth"));
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            ESP.setColor(color);
+            ESP.renderOne(ModuleManager.getModule("ESP").getIntegerValue("LineWidth"));
 
             GlStateManager.pushMatrix();
 
@@ -179,12 +160,7 @@ public class MixinModelEnderCrystal extends ModelBase {
             this.cube.render(scale);
             GlStateManager.popMatrix();
 
-            try{
-                Class[] params = {};
-                ModuleManager.getMixinProxyClass().getMethod("renderTwo", params).invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            ESP.renderTwo();
 
             GlStateManager.pushMatrix();
 
@@ -207,13 +183,7 @@ public class MixinModelEnderCrystal extends ModelBase {
             this.cube.render(scale);
             GlStateManager.popMatrix();
 
-            try{
-                Class[] params = {};
-                ModuleManager.getMixinProxyClass().getMethod("renderThree", params).invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
+            ESP.renderThree();
 
             GlStateManager.pushMatrix();
 
@@ -236,12 +206,7 @@ public class MixinModelEnderCrystal extends ModelBase {
             this.cube.render(scale);
             GlStateManager.popMatrix();
 
-            try{
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("renderFour", params).invoke(ModuleManager.getMixinProxyClass(), color);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            ESP.renderFour(color);
 
             GlStateManager.pushMatrix();
 
@@ -263,21 +228,10 @@ public class MixinModelEnderCrystal extends ModelBase {
             GlStateManager.rotate(limbSwingAmount, 0.0F, 1.0F, 0.0F);
             this.cube.render(scale);
             GlStateManager.popMatrix();
-            try{
-                Class[] params = {};
-                ModuleManager.getMixinProxyClass().getMethod("renderFive", params).invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
 
+            ESP.renderFive();
 
-            try{
-                Class[] params = {Color.class};
-                ModuleManager.getMixinProxyClass().getMethod("setColor", params).invoke(ModuleManager.getMixinProxyClass(), Color.WHITE);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
+            ESP.setColor(color);
 
             callbackInfo.cancel();
         }

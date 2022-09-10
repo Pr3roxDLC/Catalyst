@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.render.ShulkerPreview;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,14 +20,10 @@ public class MixinGuiContainer {
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     public void drawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci){
-
-
-        Class[] params = {int.class, int.class, int.class, int.class};
-        try{
-          ModuleManager.getMixinProxyClass().getMethod("updateFields", params).invoke(ModuleManager.getMixinProxyClass(), mouseX, mouseY, guiLeft, guiTop);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        ShulkerPreview.mouseX = mouseX;
+        ShulkerPreview.mouseY = mouseY;
+        ShulkerPreview.guiLeft = guiLeft;
+        ShulkerPreview.guiTop = guiTop;
     }
 
 }

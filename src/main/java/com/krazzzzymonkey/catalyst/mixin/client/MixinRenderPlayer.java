@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -37,16 +38,7 @@ public abstract class MixinRenderPlayer {
             } else {
                 GlStateManager.enableAlpha();
                 if(!ModuleManager.getModule("Viewmodel").isToggledValue("Textured"))GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-                Method getRainbow;
-                Color rainbow = new Color(-1);
-                try {
-                    Class[] noParams = {};
-                    getRainbow = ModuleManager.getMixinProxyClass().getMethod("getRainbow", noParams);
-                    rainbow = (Color) getRainbow.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-                } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
+                Color rainbow = ColorUtils.rainbow();
                 GL11.glColor4f(rainbow.getRed() / 255f, rainbow.getGreen() / 255f, rainbow.getBlue() / 255f, ModuleManager.getModule("Viewmodel").getIntegerValue("Alpha") / 100f);
             }
         }

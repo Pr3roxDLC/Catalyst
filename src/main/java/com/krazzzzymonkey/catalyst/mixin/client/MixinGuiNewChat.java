@@ -1,6 +1,10 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
+import com.krazzzzymonkey.catalyst.managers.ChatMentionManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.chat.ChatMention;
+import com.krazzzzymonkey.catalyst.module.modules.chat.CustomChat;
+import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.Gui;
@@ -47,14 +51,7 @@ public abstract class MixinGuiNewChat extends Gui {
         final GuiNewChat chat = this.mc.ingameGUI.getChatGUI();
         ci.cancel();
         Method getRainbow;
-        Color rainbow = new Color(-1);
-        try {
-            Class[] noParams = {};
-            getRainbow = ModuleManager.getMixinProxyClass().getMethod("getRainbow", noParams);
-            rainbow = (Color) getRainbow.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        Color rainbow = ColorUtils.rainbow();
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             int i = chat.getLineCount();
             int j = this.drawnChatLines.size();
@@ -102,13 +99,7 @@ public abstract class MixinGuiNewChat extends Gui {
 
 
                                     Method getFormatting;
-                                    String formatting = "";
-                                    try {
-                                        Class[] noParams = {};
-                                        getFormatting = ModuleManager.getMixinProxyClass().getMethod("getFormatting", noParams);
-                                        formatting = (String) getFormatting.invoke(ModuleManager.getModuleClass("ChatMention"), (Object[]) null);
-                                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
-                                    }
+                                    String formatting = ChatMention.formatting;
                                     if (ModuleManager.getModule("ChatMention").isToggledValue("Name")) {
                                         if (!chatline.getChatComponent().getUnformattedText().contains("<" + mc.player.getName() + ">")) {
 
@@ -118,47 +109,24 @@ public abstract class MixinGuiNewChat extends Gui {
 
 
                                     }
-                                    Method getMentionList;
-                                    ArrayList<String> mentionList;
-                                    try {
-                                        Class[] noParams = {};
-                                        getMentionList = ModuleManager.getMixinProxyClass().getMethod("getMentionList", noParams);
-                                        mentionList = (ArrayList<String>) getMentionList.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
 
-                                        for (String word : mentionList.toArray(new String[0])) {
-                                            if (s.contains(word)) {
-                                                s = s.replace(word, formatting + word + "\u00A7r");
-                                            }
+                                    ArrayList<String> mentionList = ChatMentionManager.mentionList;
+                                    for (String word : mentionList.toArray(new String[0])) {
+                                        if (s.contains(word)) {
+                                            s = s.replace(word, formatting + word + "\u00A7r");
                                         }
-                                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ignored) {
                                     }
-
                                 }
                                 GlStateManager.enableBlend();
 
                                 if (s.startsWith("\u00a78[" + "\u00A7r" + "Catalyst" + "\u00a78]\u00a77")) {
                                     if (ModuleManager.getModule("CustomChat").isToggledValue("CustomFont") && ModuleManager.getModule("CustomChat").isToggled()) {
-
-
-                                        try {
-                                            Class[] params = {String.class, double.class, double.class, int.class};
-                                            ModuleManager.getMixinProxyClass().getMethod("drawStringWithShadow", params).invoke(ModuleManager.getMixinProxyClass(), s, (double)0.0, (double) (j2 - 8), (int)(rainbow.getRGB() + (l1 << 24)));
-                                        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                                            e.printStackTrace();
-                                        }
-
-
+                                        CustomChat.fontRenderer.drawStringWithShadow(s, (double) 0.0, (double) (j2 - 8), (int) (rainbow.getRGB() + (l1 << 24)));
                                     } else
                                         this.mc.fontRenderer.drawStringWithShadow(s, 0.0F, (float) (j2 - 8), rainbow.getRGB() + (l1 << 24));
                                 } else {
                                     if (ModuleManager.getModule("CustomChat").isToggledValue("CustomFont") && ModuleManager.getModule("CustomChat").isToggled()) {
-                                        try {
-                                            Class[] params = {String.class, double.class, double.class, int.class};
-                                            ModuleManager.getMixinProxyClass().getMethod("drawStringWithShadow", params).invoke(ModuleManager.getMixinProxyClass(),
-                                                s, (double)0.0, (double) (j2 - 8), (int)(16777215 + (l1 << 24)));
-                                        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                                            e.printStackTrace();
-                                        }
+                                        CustomChat.fontRenderer.drawStringWithShadow(s, (double) 0.0, (double) (j2 - 8), (int) (16777215 + (l1 << 24)));
                                     } else
                                         this.mc.fontRenderer.drawStringWithShadow(s, 0.0F, (float) (j2 - 8), 16777215 + (l1 << 24));
                                 }

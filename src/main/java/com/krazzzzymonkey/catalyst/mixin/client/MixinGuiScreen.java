@@ -2,6 +2,7 @@ package com.krazzzzymonkey.catalyst.mixin.client;
 
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.render.ShulkerPreview;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemShulkerBox;
@@ -28,24 +29,14 @@ public class MixinGuiScreen {
                 NBTTagCompound blockEntityTag = tagCompound.getCompoundTag("BlockEntityTag");
                 if (blockEntityTag.hasKey("Items", 9)) {
                     ci.cancel();
-
-
-                    Class[] params = {NBTTagCompound.class, ItemStack.class, boolean.class, boolean.class};
-                    try{
-                        ModuleManager.getMixinProxyClass().getMethod("updateFields", params).invoke(ModuleManager.getMixinProxyClass(), blockEntityTag, is , true, Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-
+                    ShulkerPreview.nbt = blockEntityTag;
+                    ShulkerPreview.itemStack = is;
+                    ShulkerPreview.active = true;
+                    ShulkerPreview.pinned = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
                     if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
-                        Class[] param = {int.class, int.class};
-                        try{
-                            ModuleManager.getMixinProxyClass().getMethod("updateFields", param).invoke(ModuleManager.getMixinProxyClass(), x, y);
-                        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
+                        ShulkerPreview.drawX = x;
+                        ShulkerPreview.drawY = y;
                     }
-
                 }
             }
         }

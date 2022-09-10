@@ -1,6 +1,8 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
+import com.krazzzzymonkey.catalyst.managers.FriendManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
@@ -35,17 +37,7 @@ public class MixinLayerArmorBase {
                 GlStateManager.color(ModuleManager.getModule("EnchantColor").getColorValue("Color").getRed() / 255f, ModuleManager.getModule("EnchantColor").getColorValue("Color").getGreen() / 255f, ModuleManager.getModule("EnchantColor").getColorValue("Color").getBlue() / 255f);
             }
             if (ModuleManager.getModule("EnchantColor").isToggledValue("Rainbow")) {
-
-                Method getRainbow;
-                Color rainbow = new Color(-1);
-                try {
-                    Class[] noParams = {};
-                    getRainbow = ModuleManager.getMixinProxyClass().getMethod("getRainbow", noParams);
-                    rainbow = (Color) getRainbow.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-                } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-
+                Color rainbow =  ColorUtils.rainbow();
                 GlStateManager.color(rainbow.getRed() / 255f, rainbow.getGreen() / 255f, rainbow.getBlue() / 255f);
             }
         }
@@ -63,15 +55,7 @@ public class MixinLayerArmorBase {
             boolean friendsOnly = ModuleManager.getModule("NoRender").isToggledValue("FriendsOnly");
             boolean applyGradient = true;
 
-            Method getFriends = null;
-            ArrayList<String> friendsList = new ArrayList<>();
-            try {
-                Class[] noParams = {};
-                getFriends = ModuleManager.getMixinProxyClass().getMethod("getFriendList", noParams);
-                friendsList = (ArrayList<String>) getFriends.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+            ArrayList<String> friendsList = FriendManager.friendsList;
 
             if (friendsOnly && !friendsList.contains(entityLivingBaseIn.getName())) applyGradient = false;
             //System.out.println("Passed the friendsOnly Check : " + applyGradient);

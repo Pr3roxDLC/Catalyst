@@ -1,5 +1,8 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
+import com.krazzzzymonkey.catalyst.events.MotionEvent;
+import com.krazzzzymonkey.catalyst.events.PlayerMoveEvent;
+import com.krazzzzymonkey.catalyst.gui.chest.CustomGuiChest;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
@@ -21,6 +24,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 
+import static com.krazzzzymonkey.catalyst.managers.ModuleManager.EVENT_MANAGER;
+
 @Mixin(EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 
@@ -38,26 +43,12 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"))
     public void onMovePre(CallbackInfo callbackInfo) {
-
-        try {
-            Class[] params = {String.class};
-            ModuleManager.getMixinProxyClass().getMethod("postMotionEvent", params).invoke(ModuleManager.getMixinProxyClass(), "PRE");
-
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        EVENT_MANAGER.post(new MotionEvent.PRE());
     }
 
     @Inject(method = "onUpdateWalkingPlayer", at = @At("RETURN"))
     public void onMovePost(CallbackInfo callbackInfo) {
-
-        try {
-            Class[] params = {String.class};
-            ModuleManager.getMixinProxyClass().getMethod("postMotionEvent", params).invoke(ModuleManager.getMixinProxyClass(), "POST");
-
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        EVENT_MANAGER.post(new MotionEvent.POST());
     }
 
 
@@ -73,12 +64,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
     public void displayGUIChest(IInventory inventory, CallbackInfo ci) {
         String id = inventory instanceof IInteractionObject ? ((IInteractionObject) inventory).getGuiID() : "minecraft:container";
         if (id.equals("minecraft:chest") || inventory.getName().equals("Ender Chest") || id.equals("minecraft:shulker_box")) {
-            try{
-                Class[] params = {IInventory.class};
-                ModuleManager.getMixinProxyClass().getMethod("initFakeInventory", params).invoke(ModuleManager.getMixinProxyClass(), inventory);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
+            Minecraft.getMinecraft().displayGuiScreen(new CustomGuiChest(Minecraft.getMinecraft().player.inventory, inventory));
             ci.cancel();
         }
     }
@@ -98,16 +84,8 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MoverType type, double x, double y, double z, CallbackInfo ci) {
-        try{
-            Class[] params = {MoverType.class, double.class, double.class, double.class};
-            Object[] values = (Object[]) ModuleManager.getMixinProxyClass().getMethod("onPlayerMove", params).invoke(ModuleManager.getMixinProxyClass(), type, x, y, z);
-            type = (MoverType) values[0];
-            x = (double) values[1];
-            y = (double) values[2];
-            z = (double) values[3];
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        PlayerMoveEvent event = new PlayerMoveEvent(type, x, y ,z);
+        EVENT_MANAGER.post(event);
     }
 
     public boolean shouldSprint(EntityPlayerSP player) {

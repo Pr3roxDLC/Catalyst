@@ -1,6 +1,8 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
+import com.krazzzzymonkey.catalyst.managers.FriendManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.render.TabFriends;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -28,28 +30,13 @@ public class MixinGuiPlayerTabOverlay {
 
 
         if (ModuleManager.getModule("TabFriends").isToggled()){
-            Method getFriendList;
-            ArrayList<String> friendList;
-
-            Method getStringColor;
-            String color;
-            try {
-                Class[] noParams = {};
-                getFriendList = ModuleManager.getMixinProxyClass().getMethod("getFriendList", noParams);
-                friendList = (ArrayList<String>) getFriendList.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-
-                getStringColor = ModuleManager.getMixinProxyClass().getMethod("getStringColor", noParams);
-                color = (String) getStringColor.invoke(ModuleManager.getMixinProxyClass(), (Object[]) null);
-
+            ArrayList<String> friendList = FriendManager.friendsList;
+            String color = TabFriends.color;
                 if (friendList.contains(displayName)) {
                     return (ModuleManager.getModule("TabFriends").isToggledValue("Prefix") ? "\u00A77" + "[" + color + "F" + "\u00A77" + "] " : "") + color + displayName;
                 } else {
                     return displayName;
                 }
-
-            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
         }
         return displayName;
     }

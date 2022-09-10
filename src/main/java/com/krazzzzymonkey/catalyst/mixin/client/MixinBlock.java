@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
+import com.krazzzzymonkey.catalyst.module.modules.render.XRay;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,15 +16,9 @@ public class MixinBlock {
 
     @Inject(method = { "isFullCube" }, at = { @At("HEAD") }, cancellable = true)
     public void isFullCube(IBlockState state, CallbackInfoReturnable<Boolean> cir) {
-        try {
             if (ModuleManager.getModule("XRay").isToggled()) {
-                Method isInList = ModuleManager.getMixinProxyClass().getMethod("isInList", net.minecraft.block.Block.class);
-                cir.setReturnValue(Boolean.TRUE.equals(isInList.invoke(ModuleManager.getMixinProxyClass(), Block.class.cast(this))));
+                cir.setReturnValue(XRay.blocks.contains(state.getBlock()));
                 cir.cancel();
             }
-        }
-        catch (Exception ignored) {
-
-        }
     }
 }

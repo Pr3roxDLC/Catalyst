@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.lang.reflect.InvocationTargetException;
 
+import static com.krazzzzymonkey.catalyst.managers.ModuleManager.EVENT_MANAGER;
+
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
 
@@ -28,14 +30,8 @@ public class MixinMinecraft {
     public void onDispatchKeypresses(CallbackInfo callbackInfo) {
         int i = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
         if (Keyboard.getEventKeyState()) {
-
-            try {
-                Class[] params = {int.class};
-                ModuleManager.getMixinProxyClass().getMethod("postKeyDownEvent", params).invoke(ModuleManager.getMixinProxyClass(), i);
-
-            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
+            KeyDownEvent e = new KeyDownEvent(i);
+            EVENT_MANAGER.post(e);
         }
     }
 

@@ -1,9 +1,6 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.managers.LuaManager;
-import com.krazzzzymonkey.catalyst.managers.ModuleManager;
-import com.krazzzzymonkey.catalyst.module.modules.other.MixinProxy;
-import net.minecraft.client.Minecraft;
 import org.luaj.vm2.LuaValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,8 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 
