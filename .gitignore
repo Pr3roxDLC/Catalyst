@@ -1,0 +1,29 @@
+# ignore all files
+*
+# but include directories
+!*/
+
+# git
+!/**/.gitkeep
+!/.gitignore
+!/.gitmodules
+
+# java
+!/src/**
+
+# gradle
+!/build.gradle
+!/gradle.properties
+!/settings.gradle
+# gradle wrapper
+!/gradle/**
+!/gradlew
+!/gradlew.bat
+
+# misc
+!/.github/**
+!/.binscure/**
+!/scripts/**
+!/*.md
+!/.editorconfig
+!/LICENSE

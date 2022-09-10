@@ -1,0 +1,18 @@
+# https://editorconfig.org
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.java]
+indent_size = 4
+
+[*.{json, toml, xml, yml}]
+indent_size = 2
+
+[*.md]
+max_line_length = 420
+trim_trailing_whitespace = false

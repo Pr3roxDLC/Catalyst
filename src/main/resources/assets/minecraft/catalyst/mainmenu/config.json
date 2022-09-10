@@ -1,0 +1,187 @@
+{
+  "images": {
+    "black": {
+      "image": "mainmenu/bg_menu.png",
+      "posX": 99,
+      "posY": 0,
+      "width": 155,
+      "height": 800,
+      "alignment": "top_left"
+    },
+    "logo": {
+      "image": "mainmenu/logo.png",
+      "posX": 75,
+      "posY": 0,
+      "width": 200,
+      "height": 96,
+      "alignment": "top_left"
+    }
+  },
+  "buttons": {
+    "singleplayer": {
+      "text": "Singleplayer",
+      "normalTextColor": 12303291,
+      "hoverTextColor": 3125670,
+      "texture": "mainmenu/btn.png",
+      "posX": 100,
+      "posY": -30,
+      "width": 153,
+      "height": 20,
+      imageWidth: 100,
+      imageHeight: 50,
+      "alignment": "left_center",
+      "action": {
+        "type": "openGui",
+        "gui": "singleplayer"
+      }
+    },
+    "multiplayer": {
+      "text": "Multiplayer",
+      "normalTextColor": 12303291,
+      "hoverTextColor": 3125670,
+      "texture": "mainmenu/btn.png",
+      "posX": 100,
+      "posY": -10,
+      "width": 153,
+      "height": 20,
+      imageWidth: 100,
+      imageHeight: 50,
+      "alignment": "left_center",
+      "action": {
+        "type": "openGui",
+        "gui": "multiplayer"
+      }
+    },
+
+    "options": {
+      "text": "Options",
+      "normalTextColor": 12303291,
+      "hoverTextColor": 3125670,
+      "texture": "mainmenu/btn.png",
+      "posX": 100,
+      "posY": 10,
+      "width": 153,
+      "height": 20,
+      imageWidth: 100,
+      imageHeight: 50,
+      "alignment": "left_center",
+      "action": {
+        "type": "openGui",
+        "gui": "options"
+      }
+    },
+    "language": {
+      "text": "Language",
+      "texture": "mainmenu/btn.png",
+      "posX": 100,
+      "posY": 30,
+      "width": 153,
+      "height": 20,
+      imageWidth: 100,
+      imageHeight: 50,
+      "alignment": "left_center",
+      "action": {
+        "type": "openGui",
+        "gui": "languages"
+      }
+    },
+    "clickgui": {
+      "text": "Alt Manager",
+      "normalTextColor": 12303291,
+      "hoverTextColor": 3125670,
+      "texture": "mainmenu/btn.png",
+      "posX": 100,
+      "posY": 50,
+      "width": 153,
+      "height": 20,
+      imageWidth: 100,
+      imageHeight: 50,
+      "alignment": "left_center",
+      "action": {
+        "type": "openGui",
+        "gui": "clickgui"
+      }
+    },
+
+    "quit": {
+      "text": "Quit",
+      "normalTextColor": 16729156,
+      "hoverTextColor": 14483456,
+      "texture": "mainmenu/btn.png",
+      "posX": 100,
+      "posY": 70,
+      "width": 153,
+      "height": 20,
+      imageWidth: 100,
+      imageHeight: 50,
+      "alignment": "left_center",
+      "hoverText": "No! Don't leave!",
+      "action": {
+        "type": "quit"
+      }
+    },
+    "mods": {
+      "text": "Mods (#modsloaded#/#modsactive#)",
+      "normalTextColor": 6710886,
+      "hoverTextColor": 3125670,
+      "texture": "mainmenu/btn.png",
+      "posX": 100,
+      "posY": 100,
+      "width": 153,
+      "height": 20,
+      imageWidth: 100,
+      imageHeight: 50,
+      imageWidth: 100,
+      imageHeight: 50,
+      "alignment": "left_center",
+      "action": {
+        "type": "openGui",
+        "gui": "mods"
+      }
+    }
+  },
+  "texts": {
+    "mojang": {
+      "text": "Forge #forgeversion# for Minecraft #mcversion# - Copyright Mojang AB. Do not distribute!",
+      "posX": 2,
+      "posY": -10,
+      "color": -1,
+      "alignment": "bottom_left"
+    },
+    "packTxt": {
+      "text": "AAIII - 0.0.1a",
+      "posX": 2,
+      "posY": -25,
+      "color": -1,
+      "alignment": "bottom_left"
+    }
+  },
+  "alignments": {
+    "c1": {
+      "factorWidth": 0.5,
+      "factorHeight": 0.7
+    },
+    "c2": {
+      "factorWidth": 0.2,
+      "factorHeight": 0.2
+    }
+  },
+  "other": {
+    "background": {
+      "image": "",
+      "slideshow": {
+        "images": [
+          "mainmenu/1.jpg",
+          "mainmenu/2.png",
+          "mainmenu/3.jpg",
+          "mainmenu/4.jpg",
+          "mainmenu/5.jpg",
+          "mainmenu/6.jpg"
+        ],
+        "displayDuration": 500,
+        "fadeDuration": 30,
+        "shuffle": "true"
+      }
+    }
+  }
+}

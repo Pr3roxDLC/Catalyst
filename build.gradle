@@ -1,0 +1,185 @@
+buildscript {
+    repositories {
+        //jcenter()
+        maven { url = "https://plugins.gradle.org/m2/" }
+        maven { url = "https://maven.minecraftforge.net" }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext:1.0.1"
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "org.jetbrains.gradle.plugin.idea-ext"
+
+group = project.mod_group
+archivesBaseName = project.mod_name
+version = project.mod_version
+
+sourceCompatibility = targetCompatibility = '1.8'
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+}
+
+idea.project.settings {
+    // run all the shit needed to prepare project on gradle reload (refresh button)
+    taskTriggers {
+        beforeSync tasks.getByName("clean"), tasks.getByName("setupDecompWorkspace")
+    }
+}
+
+minecraft {
+    version = project.forge_version
+    mappings = project.mcp_version
+
+    runDir = "run"
+    makeObfSourceJar = true
+
+    coreMod = 'com.krazzzzymonkey.catalyst.mixin.MixinLoaderForge'
+
+    replaceIn "com/krazzzzymonkey/catalyst/Main.java"
+    replace "@modid@", project.mod_id
+    replace "@version@", project.mod_version
+    replace "@name@", project.mod_name
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spongepowered'
+        url = 'https://repo.spongepowered.org/repository/maven-public'
+    }
+    maven {
+        name = 'impactdevelopment'
+        url = 'https://impactdevelopment.github.io/maven/'
+    }
+    maven {
+        name = 'swt'
+        url = "https://maven-eclipse.github.io/maven"
+    }
+    maven {
+        name = "jitpack.io"
+        url = "https://jitpack.io"
+    }
+    maven {
+        name = "tigr.dev"
+        url = "https://maven.tigr.dev"
+    }
+}
+
+dependencies {
+    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+    compile 'net.jodah:typetools:0.6.3'
+    compile "dev.tigr:simpleevents:1.3"
+    compile 'org.luaj:luaj-jse:3.0.1'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
+    /*compile 'com.github.cabaletta:baritone:1.2.14'*/
+    /*compile 'cabaletta:baritone-api:1.2'*/
+    compileOnly 'com.google.code.gson:gson:2.8.0' // gson is included in mc 1.12.2, im just not sure what version
+    /*compileOnly 'org.jetbrains:annotations:21.0.1'*/
+    /*test scope*/
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0-M1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+
+        // replace version and mcversion
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+    // copy everything else except the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+    // move access transformer config
+    rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('org.spongepowered:mixin'))
+        include(dependency('org.luaj:luaj-jse:3.0.1'))
+        include(dependency('com.googlecode.json-simple:json-simple:1.1.1'))
+        include(dependency('club.minnced:java-discord-rpc:2.0.1'))
+        /*include(dependency('cabaletta:baritone-api'))*/
+        include(dependency('dev.tigr:simpleevents:1.3'))
+        include(dependency('net.jodah:typetools'))
+
+    }
+    exclude 'dummyThing'
+    exclude 'LICENSE.txt'
+    classifier = 'shadow'
+}
+
+mixin {
+    defaultObfuscationEnv searge
+    add sourceSets.main, 'mixins.catalyst.refmap.json'
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+        classpath = sourceSets.main.compileClasspath
+    }
+}
+
+sourceSets {
+    main {
+        refMap = "mixins.catalyst.refmap.json"
+    }
+}
+
+
+jar {
+    manifest {
+        attributes(
+                'MixinConfigs': 'mixins.catalyst.json',
+                'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+                'TweakOrder': 0,
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLCorePlugin': 'com.krazzzzymonkey.catalyst.mixin.MixinLoaderForge',
+                'ForceLoadAsMod': 'true',
+                'FMLAT': 'catalyst_at.cfg'
+        )
+    }
+}
+
+task loaderJar(type: Jar, dependsOn: shadowJar) {
+    from(zipTree(shadowJar.archivePath)) {
+        include "assets/minecraft/catalyst/mainmenu/config.json"
+        include "com/krazzzzymonkey/**"
+        include "mixins.catalyst.json"
+        include "mixins.catalyst.refmap.json"
+    }
+    baseName = project.mod_name
+    version = project.mod_version
+    classifier = "loader"
+    manifest = jar.manifest
+}
+loaderJar.dependsOn(shadowJar)
+
+
+build.dependsOn(shadowJar, loaderJar)
