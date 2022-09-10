@@ -37,6 +37,7 @@ public class CommandManager {
         addCommand(new Friend());
         addCommand(new Enemy());
         addCommand(new Prefix());
+        addCommand(new Brainfuck());
         addCommand(new BreadcrumbsCommand());
         addCommand(new Peek());
         addCommand(new PeekBook());
