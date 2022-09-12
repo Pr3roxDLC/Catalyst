@@ -4,6 +4,7 @@ Made By Krazzzzymonkey, blockparole and Pr3roxDLC
 ## Building The Source
 </p>
 Use cmd/terminal to build the client with gradlew using the following commads.
+
 ```
 gradlew setupdecompworkspace
 ```
@@ -15,3 +16,4 @@ gradlew clean
 ```
 gradlew build
 ```
+
