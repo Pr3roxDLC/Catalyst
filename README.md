@@ -1,5 +1,6 @@
 Minecaft Forge Utility Mod Designed for the anarchy environment.
-Made By Krazzzzymonkey, blockparole and Pr3roxDLC
+Made By Krazzzzymonkey, blockparole and Pr3roxDLC  
+Artwork by LilGanja1337  
 <p align="center">
 Building The Source
 </p>
