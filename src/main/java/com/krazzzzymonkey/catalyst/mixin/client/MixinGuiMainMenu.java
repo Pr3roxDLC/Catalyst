@@ -68,8 +68,7 @@ public class MixinGuiMainMenu extends GuiScreen {
     private int openGLWarning2Width;
     @Shadow
     private GuiScreen realmsNotification;
-    @Shadow
-    private net.minecraftforge.client.gui.NotificationModUpdateScreen modUpdateNotification;
+
 
 
     @Inject(method = "<init>", at = @At("RETURN"))
@@ -194,7 +193,6 @@ public class MixinGuiMainMenu extends GuiScreen {
             if (this.areRealmsNotificationsEnabled()) {
                 this.realmsNotification.drawScreen(mouseX, mouseY, partialTicks);
             }
-            modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
             ci.cancel();
         }
 
