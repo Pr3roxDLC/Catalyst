@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.module.modules.render;
 
 import com.krazzzzymonkey.catalyst.Main;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
 import com.krazzzzymonkey.catalyst.module.ModuleCategory;
 import com.krazzzzymonkey.catalyst.module.Modules;
@@ -8,6 +9,7 @@ import com.krazzzzymonkey.catalyst.value.Mode;
 import com.krazzzzymonkey.catalyst.value.types.BooleanValue;
 import com.krazzzzymonkey.catalyst.value.types.ModeValue;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -33,7 +35,7 @@ public class CustomMainMenu extends Modules {
         File defaultShader = new File(SHADER_DIR, "default.fsh");
         if(!defaultShader.exists()){
             //Grab default shader from the userdir in case it doesnt exist (as a fallback)
-            File fragShaderFile = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "shader" + File.separator + "fragment.fsh");
+            File fragShaderFile = FileManager.getAssetFile("shader/fragment.fsh");
             try {
                 FileUtils.copyFile(fragShaderFile, defaultShader);
             } catch (IOException e) {

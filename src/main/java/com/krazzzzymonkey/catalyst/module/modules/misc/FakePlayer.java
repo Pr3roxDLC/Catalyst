@@ -2,6 +2,7 @@ package com.krazzzzymonkey.catalyst.module.modules.misc;
 
 import com.krazzzzymonkey.catalyst.events.ClientTickEvent;
 import com.krazzzzymonkey.catalyst.events.PacketEvent;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
 import com.krazzzzymonkey.catalyst.module.ModuleCategory;
 import com.krazzzzymonkey.catalyst.module.Modules;
@@ -76,7 +77,7 @@ public class FakePlayer extends Modules {
             return;
         }
         clonedPlayer = new EntityOtherPlayerMP(mc.world, new GameProfile(UUID.fromString("3a54cd18-783e-4b6c-9f5f-70c23fd9dca9"), "CatalystClient"));
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "fakeplayer" + File.separator + "skin.png");
+        File file = FileManager.getAssetFile("fakeplayer/skin.png");
 
         {
             try {

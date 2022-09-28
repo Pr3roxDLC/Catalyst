@@ -16,26 +16,37 @@ import com.krazzzzymonkey.catalyst.value.types.ColorValue;
 import com.krazzzzymonkey.catalyst.value.types.ModeValue;
 import com.krazzzzymonkey.catalyst.value.types.SubMenu;
 import com.krazzzzymonkey.catalyst.xray.XRayData;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IResource;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import org.apache.commons.io.FileUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FileManager {
 
-    private static final Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
+    public static final File CATALYST_DIR = new File(String.format("%s%s%s%s",
+                                                                   Wrapper.INSTANCE.mc().gameDir,
+                                                                   File.separator,
+                                                                   Main.NAME,
+                                                                   File.separator));
+    public static final File ASSET_DIR = new File(CATALYST_DIR + "/Assets/");
+    private static final Minecraft mc = Minecraft.getMinecraft();
 
-    private static final JsonParser jsonParser = new JsonParser();
-
-    public static final File CATALYST_DIR = new File(String.format("%s%s%s%s", Wrapper.INSTANCE.mc().gameDir, File.separator, Main.NAME, File.separator));
     public static final File ALT_DIR = new File(CATALYST_DIR + "/Catalyst Account Manager/");
     public static final File PROFILES_DIR = new File(CATALYST_DIR + "/Profiles/");
-
-    public static final File CLICKGUI = new File(CATALYST_DIR, "clickgui.json");
     private static final File HACKS = new File(PROFILES_DIR, "default.json");
+    public static final File CLICKGUI = new File(CATALYST_DIR, "clickgui.json");
+    private static final Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
+    private static final JsonParser jsonParser = new JsonParser();
     private static final File CHATMENTION = new File(CATALYST_DIR, "chatmention.json");
     private static final File AUTOGGMESSAGES = new File(CATALYST_DIR, "ggmessages.txt");
     private static final File XRAYDATA = new File(CATALYST_DIR, "xraydata.json");
@@ -46,70 +57,26 @@ public class FileManager {
     private static final File FONT = new File(CATALYST_DIR, "font.json");
     private static final File INVENTORY_CLEANER = new File(CATALYST_DIR, "inventorycleaner.json");
 
-    public FileManager() {
-        if (!CATALYST_DIR.exists()) {
-            CATALYST_DIR.mkdir();
+    public static @Nullable File getAssetFile(@Nonnull String path) {
+        ResourceLocation location = new ResourceLocation("catalyst", path);
+        IResource resource;
+        try {
+            resource = mc.resourceManager.getResource(location);
+        } catch (IOException e) {
+            Main.logger.info(e.getMessage());
+            return null;
         }
-        if (!ALT_DIR.exists()) {
-            ALT_DIR.mkdir();
+        File file = new File(ASSET_DIR + location.getPath());
+        if (!file.exists()) {
+            try {
+                file.mkdirs();
+                FileUtils.copyInputStreamToFile(resource.getInputStream(), file);
+            } catch (IOException | SecurityException e) {
+                Main.logger.info(e.getMessage());
+                return null;
+            }
         }
-        if (!PROFILES_DIR.exists()) {
-            PROFILES_DIR.mkdir();
-        }
-        if (!CURRENTPROFILE.exists()) {
-            saveCurrentProfile();
-        } else {
-            loadCurrentProfile();
-        }
-        if (!(new File(PROFILES_DIR, ProfileManager.currentProfile + ".json").exists())) {
-            Main.logger.warn("Profile: " + ProfileManager.currentProfile + " does not exist! Setting default Profile");
-            ProfileManager.currentProfile = "default";
-            saveModules(ProfileManager.currentProfile);
-        } else {
-            loadModules(ProfileManager.currentProfile);
-        }
-        if (!CHATMENTION.exists()) {
-            saveChatMention();
-        } else {
-            loadChatMentions();
-        }
-        if (!XRAYDATA.exists()) {
-            saveXRayData();
-        } else {
-            loadXRayData();
-        }
-        if (!FRIENDS.exists()) {
-            saveFriends();
-        } else {
-            loadFriends();
-        }
-        if (!ENEMYS.exists()) {
-            saveEnemys();
-        } else {
-            loadEnemys();
-        }
-        if (!PREFIX.exists()) {
-            savePrefix();
-        } else {
-            loadPrefix();
-        }
-        if (!FONT.exists()) {
-            saveFont();
-        } else {
-            loadFont();
-        }
-        if (!AUTOGGMESSAGES.exists()) {
-            AutoGGManager.messages.add("GG {name}! Catalyst ontop.");
-            saveMessages();
-        } else {
-            loadMessages();
-        }
-        if(!INVENTORY_CLEANER.exists()){
-            saveInventoryCleaner();
-        }else{
-            loadInventoryCleaner();
-        }
-
+        return file;
     }
 
     private static void loadInventoryCleaner() {
@@ -131,17 +98,18 @@ public class FileManager {
         try {
             JsonObject jsonObject = new JsonObject();
             JsonArray array = new JsonArray();
-            InventoryCleaner.listItems.stream().filter(Objects::nonNull).forEach(n -> array.add(n.getItemStackDisplayName(n.getDefaultInstance())));
+            InventoryCleaner.listItems.stream()
+                                      .filter(Objects::nonNull)
+                                      .forEach(n -> array.add(n.getItemStackDisplayName(n.getDefaultInstance())));
             jsonObject.add("items", array);
 
             PrintWriter saveJson = new PrintWriter(new FileWriter(INVENTORY_CLEANER));
             saveJson.println(gsonPretty.toJson(jsonObject));
             saveJson.close();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     public static void loadCurrentProfile() {
         BufferedReader loadJson;
@@ -204,7 +172,6 @@ public class FileManager {
             e.printStackTrace();
         }
     }
-
 
     public static void loadPrefix() {
         BufferedReader loadJson = null;
@@ -277,11 +244,30 @@ public class FileManager {
                                     }
                                 }
                                 if (value instanceof ColorValue) {
-                                    value.setValue(jsonMod.get(value.getName()).getAsJsonObject().get("color").getAsInt());
-                                    ((ColorValue) value).setLineColor(jsonMod.get(value.getName()).getAsJsonObject().get("lineColor").getAsInt());
-                                    ((ColorValue) value).setSelColorY(jsonMod.get(value.getName()).getAsJsonObject().get("selColorY").getAsInt());
-                                    ((ColorValue) value).setSelOpacityY(jsonMod.get(value.getName()).getAsJsonObject().get("selOpacityY").getAsInt());
-                                    ((ColorValue) value).setTriPos(jsonMod.get(value.getName()).getAsJsonObject().get("triX").getAsInt(), jsonMod.get(value.getName()).getAsJsonObject().get("triY").getAsInt());
+                                    value.setValue(jsonMod.get(value.getName())
+                                                          .getAsJsonObject()
+                                                          .get("color")
+                                                          .getAsInt());
+                                    ((ColorValue) value).setLineColor(jsonMod.get(value.getName())
+                                                                             .getAsJsonObject()
+                                                                             .get("lineColor")
+                                                                             .getAsInt());
+                                    ((ColorValue) value).setSelColorY(jsonMod.get(value.getName())
+                                                                             .getAsJsonObject()
+                                                                             .get("selColorY")
+                                                                             .getAsInt());
+                                    ((ColorValue) value).setSelOpacityY(jsonMod.get(value.getName())
+                                                                               .getAsJsonObject()
+                                                                               .get("selOpacityY")
+                                                                               .getAsInt());
+                                    ((ColorValue) value).setTriPos(jsonMod.get(value.getName())
+                                                                          .getAsJsonObject()
+                                                                          .get("triX")
+                                                                          .getAsInt(),
+                                                                   jsonMod.get(value.getName())
+                                                                          .getAsJsonObject()
+                                                                          .get("triY")
+                                                                          .getAsInt());
                                 }
                                 if (value instanceof com.krazzzzymonkey.catalyst.value.types.Number) {
                                     value.setValue(jsonMod.get(value.getName()).getAsDouble());
@@ -289,42 +275,96 @@ public class FileManager {
                                 if (value instanceof ModeValue) {
                                     ModeValue modeValue = (ModeValue) value;
                                     for (Mode mode : modeValue.getModes()) {
-                                        mode.setToggled(jsonMod.get(modeValue.getName()).getAsJsonObject().get(mode.getName()).getAsBoolean());
+                                        mode.setToggled(jsonMod.get(modeValue.getName())
+                                                               .getAsJsonObject()
+                                                               .get(mode.getName())
+                                                               .getAsBoolean());
                                     }
                                 }
                                 if (value instanceof SubMenu) {
                                     SubMenu subMenu = (SubMenu) value;
                                     for (Value value1 : subMenu.getValues()) {
                                         if (value1 instanceof BooleanValue) {
-                                            boolean bvalue = jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsBoolean();
+                                            boolean bvalue = jsonMod.get(subMenu.getName())
+                                                                    .getAsJsonObject()
+                                                                    .get(value1.getName())
+                                                                    .getAsBoolean();
                                             value1.setValue(bvalue);
                                         }
                                         if (value1 instanceof DoubleValue) {
-                                            value1.setValue(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsDouble());
+                                            value1.setValue(jsonMod.get(subMenu.getName())
+                                                                   .getAsJsonObject()
+                                                                   .get(value1.getName())
+                                                                   .getAsDouble());
                                         }
 
                                         if (value1 instanceof IntegerValue) {
                                             try {
-                                                value1.setValue(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsBigInteger());
+                                                value1.setValue(jsonMod.get(subMenu.getName())
+                                                                       .getAsJsonObject()
+                                                                       .get(value1.getName())
+                                                                       .getAsBigInteger());
                                             } catch (NumberFormatException e) {
-                                                double doubleValue = jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsDouble();
+                                                double doubleValue = jsonMod.get(subMenu.getName())
+                                                                            .getAsJsonObject()
+                                                                            .get(value1.getName())
+                                                                            .getAsDouble();
                                                 value1.setValue((int) doubleValue);
                                             }
                                         }
                                         if (value1 instanceof ColorValue) {
-                                            value1.setValue(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsJsonObject().get("color").getAsInt());
-                                            ((ColorValue) value1).setLineColor(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsJsonObject().get("lineColor").getAsInt());
-                                            ((ColorValue) value1).setSelColorY(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsJsonObject().get("selColorY").getAsInt());
-                                            ((ColorValue) value1).setSelOpacityY(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsJsonObject().get("selOpacityY").getAsInt());
-                                            ((ColorValue) value1).setTriPos(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsJsonObject().get("triX").getAsInt(), jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsJsonObject().get("triY").getAsInt());
+                                            value1.setValue(jsonMod.get(subMenu.getName())
+                                                                   .getAsJsonObject()
+                                                                   .get(value1.getName())
+                                                                   .getAsJsonObject()
+                                                                   .get("color")
+                                                                   .getAsInt());
+                                            ((ColorValue) value1).setLineColor(jsonMod.get(subMenu.getName())
+                                                                                      .getAsJsonObject()
+                                                                                      .get(value1.getName())
+                                                                                      .getAsJsonObject()
+                                                                                      .get("lineColor")
+                                                                                      .getAsInt());
+                                            ((ColorValue) value1).setSelColorY(jsonMod.get(subMenu.getName())
+                                                                                      .getAsJsonObject()
+                                                                                      .get(value1.getName())
+                                                                                      .getAsJsonObject()
+                                                                                      .get("selColorY")
+                                                                                      .getAsInt());
+                                            ((ColorValue) value1).setSelOpacityY(jsonMod.get(subMenu.getName())
+                                                                                        .getAsJsonObject()
+                                                                                        .get(value1.getName())
+                                                                                        .getAsJsonObject()
+                                                                                        .get("selOpacityY")
+                                                                                        .getAsInt());
+                                            ((ColorValue) value1).setTriPos(jsonMod.get(subMenu.getName())
+                                                                                   .getAsJsonObject()
+                                                                                   .get(value1.getName())
+                                                                                   .getAsJsonObject()
+                                                                                   .get("triX")
+                                                                                   .getAsInt(),
+                                                                            jsonMod.get(subMenu.getName())
+                                                                                   .getAsJsonObject()
+                                                                                   .get(value1.getName())
+                                                                                   .getAsJsonObject()
+                                                                                   .get("triY")
+                                                                                   .getAsInt());
                                         }
                                         if (value1 instanceof com.krazzzzymonkey.catalyst.value.types.Number) {
-                                            value1.setValue(jsonMod.get(subMenu.getName()).getAsJsonObject().get(value1.getName()).getAsDouble());
+                                            value1.setValue(jsonMod.get(subMenu.getName())
+                                                                   .getAsJsonObject()
+                                                                   .get(value1.getName())
+                                                                   .getAsDouble());
                                         }
                                         if (value1 instanceof ModeValue) {
                                             ModeValue modeValue = (ModeValue) value1;
                                             for (Mode mode : modeValue.getModes()) {
-                                                mode.setToggled(jsonMod.get(subMenu.getName()).getAsJsonObject().get(modeValue.getName()).getAsJsonObject().get(mode.getName()).getAsBoolean());
+                                                mode.setToggled(jsonMod.get(subMenu.getName())
+                                                                       .getAsJsonObject()
+                                                                       .get(modeValue.getName())
+                                                                       .getAsJsonObject()
+                                                                       .get(mode.getName())
+                                                                       .getAsBoolean());
                                             }
                                         }
                                     }
@@ -520,7 +560,7 @@ public class FileManager {
                         }
                         if (value instanceof ColorValue) {
                             JsonObject jsonObject = new JsonObject();
-                            jsonObject.addProperty("color",((ColorValue) value).getColorInt());
+                            jsonObject.addProperty("color", ((ColorValue) value).getColorInt());
                             jsonObject.addProperty("lineColor", ((ColorValue) value).getLineColor().getRGB());
                             jsonObject.addProperty("selColorY", ((ColorValue) value).getSelColorY());
                             jsonObject.addProperty("selOpacityY", ((ColorValue) value).getSelOpacityY());
@@ -558,7 +598,7 @@ public class FileManager {
                                 }
                                 if (value1 instanceof ColorValue) {
                                     JsonObject jsonObject1 = new JsonObject();
-                                    jsonObject1.addProperty("color",((ColorValue) value1).getColorInt());
+                                    jsonObject1.addProperty("color", ((ColorValue) value1).getColorInt());
                                     jsonObject1.addProperty("lineColor", ((ColorValue) value1).getLineColor().getRGB());
                                     jsonObject1.addProperty("selColorY", ((ColorValue) value1).getSelColorY());
                                     jsonObject1.addProperty("selOpacityY", ((ColorValue) value1).getSelOpacityY());
@@ -633,5 +673,74 @@ public class FileManager {
             }
         }
         return readContent;
+    }
+
+    public static void init() {
+        reload();
+    }
+
+    public static void reload() {
+        if (!CATALYST_DIR.exists()) {
+            CATALYST_DIR.mkdir();
+        }
+        if (!ALT_DIR.exists()) {
+            ALT_DIR.mkdir();
+        }
+        if (!PROFILES_DIR.exists()) {
+            PROFILES_DIR.mkdir();
+        }
+        if (!CURRENTPROFILE.exists()) {
+            saveCurrentProfile();
+        } else {
+            loadCurrentProfile();
+        }
+        if (!(new File(PROFILES_DIR, ProfileManager.currentProfile + ".json").exists())) {
+            Main.logger.warn("Profile: " + ProfileManager.currentProfile + " does not exist! Setting default Profile");
+            ProfileManager.currentProfile = "default";
+            saveModules(ProfileManager.currentProfile);
+        } else {
+            loadModules(ProfileManager.currentProfile);
+        }
+        if (!CHATMENTION.exists()) {
+            saveChatMention();
+        } else {
+            loadChatMentions();
+        }
+        if (!XRAYDATA.exists()) {
+            saveXRayData();
+        } else {
+            loadXRayData();
+        }
+        if (!FRIENDS.exists()) {
+            saveFriends();
+        } else {
+            loadFriends();
+        }
+        if (!ENEMYS.exists()) {
+            saveEnemys();
+        } else {
+            loadEnemys();
+        }
+        if (!PREFIX.exists()) {
+            savePrefix();
+        } else {
+            loadPrefix();
+        }
+        if (!FONT.exists()) {
+            saveFont();
+        } else {
+            loadFont();
+        }
+        if (!AUTOGGMESSAGES.exists()) {
+            AutoGGManager.messages.add("GG {name}! Catalyst ontop.");
+            saveMessages();
+        } else {
+            loadMessages();
+        }
+        if (!INVENTORY_CLEANER.exists()) {
+            saveInventoryCleaner();
+        } else {
+            loadInventoryCleaner();
+        }
     }
 }

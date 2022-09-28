@@ -6,6 +6,7 @@ import com.krazzzzymonkey.catalyst.Main;
 import com.krazzzzymonkey.catalyst.gui.GuiTextField;
 import com.krazzzzymonkey.catalyst.gui.chest.CustomGuiButton;
 import com.krazzzzymonkey.catalyst.gui.click.theme.dark.DarkFrame;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import com.krazzzzymonkey.catalyst.managers.accountManager.AlreadyLoggedInException;
 import com.krazzzzymonkey.catalyst.managers.accountManager.Config;
 import com.krazzzzymonkey.catalyst.managers.accountManager.EnumBool;
@@ -355,7 +356,7 @@ public class GuiAccountSelector extends GuiScreen {
             super(mcIn, GuiAccountSelector.this.width, GuiAccountSelector.this.height, 32, GuiAccountSelector.this.height - 64, 36);
         }
 
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "mainmenu" + File.separator + "steve.png");
+        File file = FileManager.getAssetFile("mainmenu/steve.png");
 
         ResourceLocation steve;
         HashMap<String, BufferedImage> avatar = new HashMap<>();

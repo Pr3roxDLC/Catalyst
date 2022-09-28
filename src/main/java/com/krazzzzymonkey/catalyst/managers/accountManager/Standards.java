@@ -56,19 +56,6 @@ public final class Standards {
 		}
 	}
 
-	public static void updateFolder(){
-		String dir;
-		String OS = (System.getProperty("os.name")).toUpperCase();
-		if(OS.contains("WIN")){
-			dir=System.getenv("AppData");
-		}else{
-			dir=System.getProperty("user.home");
-			if(OS.contains("MAC"))
-				dir+="/Library/Application Support";
-		}
-
-	}
-
 	public static void importAccounts(){
 		processData(getConfigV3());
 		processData(getConfigV2());

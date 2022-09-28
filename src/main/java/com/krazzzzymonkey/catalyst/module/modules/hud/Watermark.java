@@ -3,6 +3,7 @@ package com.krazzzzymonkey.catalyst.module.modules.hud;
 import com.krazzzzymonkey.catalyst.Main;
 import com.krazzzzymonkey.catalyst.events.RenderGameOverlayEvent;
 import com.krazzzzymonkey.catalyst.gui.click.HudGuiScreen;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import com.krazzzzymonkey.catalyst.module.ModuleCategory;
 import com.krazzzzymonkey.catalyst.module.Modules;
 import com.krazzzzymonkey.catalyst.utils.MouseUtils;
@@ -40,7 +41,7 @@ public class Watermark extends Modules {
     private DoubleValue scale;
 
 
-    File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "gui" + File.separator + "watermark.png");
+    File file = FileManager.getAssetFile("gui/watermark.png");
 
     ResourceLocation resource;
 

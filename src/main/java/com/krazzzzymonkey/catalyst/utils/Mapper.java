@@ -1,5 +1,8 @@
 package com.krazzzzymonkey.catalyst.utils;
 
+import com.krazzzzymonkey.catalyst.managers.FileManager;
+import net.minecraft.util.ResourceLocation;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -72,7 +75,7 @@ public class Mapper {
     }
 
     public Mapper() {
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator+ "assets" + File.separator + "lua" + File.separator + "mappings.srg");
+        File file = FileManager.getAssetFile("lua/mappings.srg");
         try {
             Files.lines(file.toPath()).forEach(line -> {
                 if (line.startsWith("FD:")) {

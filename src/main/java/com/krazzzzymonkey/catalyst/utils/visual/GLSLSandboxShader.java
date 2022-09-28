@@ -2,6 +2,8 @@ package com.krazzzzymonkey.catalyst.utils.visual;
 
 
 import com.krazzzzymonkey.catalyst.Main;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.codec.binary.Hex;
 import org.codehaus.plexus.util.IOUtil;
 
@@ -23,7 +25,7 @@ public class GLSLSandboxShader {
         int program = glCreateProgram();
 
 
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "shader" + File.separator + "passthrough.vsh");
+        File file = FileManager.getAssetFile("shader/passthrough.vsh");
 
         inputStream = new FileInputStream(file);
         glAttachShader(program, createShader(inputStream, GL_VERTEX_SHADER));

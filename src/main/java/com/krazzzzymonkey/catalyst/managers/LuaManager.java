@@ -6,6 +6,7 @@ import com.krazzzzymonkey.catalyst.module.custom.CustomModule;
 import com.krazzzzymonkey.catalyst.utils.Mapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.ResourceLocation;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -35,7 +36,7 @@ public class LuaManager {
         File moduleDir = new File(CATALYST_DIR + "/Modules/");
         if (!moduleDir.exists()) {
             moduleDir.mkdirs();
-            File hotbarRandomizerScriptInAssets = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator+ "assets" + File.separator + "lua" + File.separator + "HotbarRandomizer.lua");
+            File hotbarRandomizerScriptInAssets = FileManager.getAssetFile("lua/HotbarRandomizer.lua");
             File hotbarRandomizerScriptInCatalystDir = new File(moduleDir, "HotbarRandomizer.lua");
             try {
                 Files.copy(hotbarRandomizerScriptInAssets, hotbarRandomizerScriptInCatalystDir);

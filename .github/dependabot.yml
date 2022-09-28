@@ -1,34 +1,14 @@
 version: 2
 updates:
-
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "daily"
-      time: "12:00"
-      timezone: "Europe/Berlin"
     assignees:
-      - "Krazzzzymonkey"
-      - "nothub"
-    reviewers:
-      - "Krazzzzymonkey"
-      - "nothub"
-    commit-message:
-      prefix: "gradle"
-      include: "scope"
-
+      - "Pr3roxDLC"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-      time: "12:00"
-      timezone: "Europe/Berlin"
     assignees:
-      - "Krazzzzymonkey"
-      - "nothub"
-    reviewers:
-      - "Krazzzzymonkey"
-      - "nothub"
-    commit-message:
-      prefix: "github-actions"
-      include: "scope"
+      - "Pr3roxDLC"

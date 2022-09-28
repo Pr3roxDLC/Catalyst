@@ -11,10 +11,10 @@ import com.krazzzzymonkey.catalyst.managers.*;
 import com.krazzzzymonkey.catalyst.managers.accountManager.AccountManager;
 import com.krazzzzymonkey.catalyst.managers.accountManager.Standards;
 import com.krazzzzymonkey.catalyst.managers.accountManager.config.ConfigValues;
-import com.krazzzzymonkey.catalyst.utils.AssetUtils;
 import com.krazzzzymonkey.catalyst.managers.TimerManager;
 import com.krazzzzymonkey.catalyst.utils.font.CFontRenderer;
 import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -53,8 +53,6 @@ public class Main {
     public static final String VERSION = "@version@";
     public static int initCount = 0;
     public static ModuleManager moduleManager;
-    public static FileManager fileManager;
-    public static Thread assetThread;
     public static FontManager fontManager;
 
     public static CFontRenderer fontRenderer;
@@ -78,7 +76,6 @@ public class Main {
     public void preInit(FMLPreInitializationEvent E) throws IOException {
 
 
-        assetThread = new AssetUtils().getThread();
         logger.info("   ____      _        _           _      ____ _ _            _  ");
         logger.info("  / ___|__ _| |_ __ _| |_   _ ___| |_   / ___| (_) ___ _ __ | |_ ");
         logger.info(" | |   / _` | __/ _` | | | | / __| __| | |   | | |/ _ \\ '_ \\| __|");
@@ -120,19 +117,13 @@ public class Main {
         altConfig = new Configuration(E.getSuggestedConfigurationFile());
         altConfig.load();
         syncConfig();
-        if (!E.getModMetadata().version.equals("${version}"))//Dev environment needs to use a local list, to avoid issues
-            Standards.updateFolder();
-        else
-            logger.info("Dev environment detected!");
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent E) throws IOException {
-        try {
-            assetThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        // TODO: load and dump assets
+
         if (initCount > 0) {
             return;
         }
@@ -140,10 +131,10 @@ public class Main {
         TimerManager.INSTANCE = new TimerManager();
         moduleManager = new ModuleManager();
         luaManager = new LuaManager();
-        fileManager = new FileManager();
         fontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 20), true, true);
         smallFontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 15), true, true);
         AccountManager.init();
+        FileManager.init();
 
 
         initCount++;
@@ -151,7 +142,7 @@ public class Main {
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent E){
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "gui" + File.separator + "watermark.png");
+        File file = FileManager.getAssetFile("gui/watermark.png");
 
         Display.setTitle(NAME + " " + VERSION);
 
