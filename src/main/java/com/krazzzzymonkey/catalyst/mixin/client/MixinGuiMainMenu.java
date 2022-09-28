@@ -1,6 +1,7 @@
 package com.krazzzzymonkey.catalyst.mixin.client;
 
 import com.krazzzzymonkey.catalyst.Main;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
 
 import com.krazzzzymonkey.catalyst.utils.visual.GLSLSandboxShader;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 @Mixin(GuiMainMenu.class)
 public class MixinGuiMainMenu extends GuiScreen {
 
-    File fragShaderFile = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "shader" + File.separator + "fragment.fsh");
+    File fragShaderFile = FileManager.getAssetFile("shader" + File.separator + "fragment.fsh");
 
 
     private GLSLSandboxShader backgroundShader;
@@ -73,7 +74,7 @@ public class MixinGuiMainMenu extends GuiScreen {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     void constructorReturn(CallbackInfo ci) {
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "mainmenu" + File.separator + "minecraft.png");
+        File file = FileManager.getAssetFile("mainmenu" + File.separator + "minecraft.png");
         try {
             if (ModuleManager.getModule("CustomMainMenu").isToggledValue("CustomLogo") && ModuleManager.getModule("CustomMainMenu").isToggled()) {
                 MINECRAFT_TITLE_TEXTURES = Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file)));

@@ -8,6 +8,7 @@ import com.krazzzzymonkey.catalyst.gui.click.base.ComponentRenderer;
 import com.krazzzzymonkey.catalyst.gui.click.base.ComponentType;
 import com.krazzzzymonkey.catalyst.gui.click.elements.ColorPicker;
 import com.krazzzzymonkey.catalyst.gui.click.theme.Theme;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import com.krazzzzymonkey.catalyst.managers.ModuleManager;
 import com.krazzzzymonkey.catalyst.utils.MouseUtils;
 import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
@@ -33,9 +34,9 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 public class DarkColorPicker extends ComponentRenderer {
     boolean clicking = false;
 
-    File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "gui" + File.separator + "colorline.png");
-    File file2 = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "gui" + File.separator + "colortransparent.png");
-    File file3 = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "gui" + File.separator + "colortransparentoverlay.png");
+    File file = FileManager.getAssetFile("gui" + File.separator + "colorline.png");
+    File file2 = FileManager.getAssetFile("gui" + File.separator + "colortransparent.png");
+    File file3 = FileManager.getAssetFile("gui" + File.separator + "colortransparentoverlay.png");
 
     ResourceLocation resourceLocation;
     ResourceLocation transparentResourceLocation;
@@ -43,9 +44,19 @@ public class DarkColorPicker extends ComponentRenderer {
 
     {
         try {
-            resourceLocation = Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file)));
-            transparentResourceLocation = Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file2)));
-            transparentOverlayResourceLocation = Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file3)));
+            resourceLocation = Minecraft.getMinecraft()
+                                        .getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(),
+                                                                                                   new DynamicTexture(
+                                                                                                       ImageIO.read(file)));
+            transparentResourceLocation = Minecraft.getMinecraft()
+                                                   .getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(),
+                                                                                                              new DynamicTexture(
+                                                                                                                  ImageIO.read(
+                                                                                                                      file2)));
+            transparentOverlayResourceLocation = Minecraft.getMinecraft()
+                                                          .getRenderManager().renderEngine.getDynamicTextureLocation(
+                    file.getName(),
+                    new DynamicTexture(ImageIO.read(file3)));
         } catch (IOException e) {
             e.printStackTrace();
         }

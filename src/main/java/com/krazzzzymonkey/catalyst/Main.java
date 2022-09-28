@@ -1,7 +1,5 @@
 package com.krazzzzymonkey.catalyst;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.krazzzzymonkey.catalyst.configuration.Config;
 import com.krazzzzymonkey.catalyst.configuration.ConfigurationLoader;
 import com.krazzzzymonkey.catalyst.events.ClientEvents;
@@ -11,8 +9,6 @@ import com.krazzzzymonkey.catalyst.managers.*;
 import com.krazzzzymonkey.catalyst.managers.accountManager.AccountManager;
 import com.krazzzzymonkey.catalyst.managers.accountManager.Standards;
 import com.krazzzzymonkey.catalyst.managers.accountManager.config.ConfigValues;
-import com.krazzzzymonkey.catalyst.utils.AssetUtils;
-import com.krazzzzymonkey.catalyst.managers.TimerManager;
 import com.krazzzzymonkey.catalyst.utils.font.CFontRenderer;
 import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,7 +26,8 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 import static com.krazzzzymonkey.catalyst.managers.FileManager.CATALYST_DIR;
 
@@ -53,8 +50,6 @@ public class Main {
     public static final String VERSION = "@version@";
     public static int initCount = 0;
     public static ModuleManager moduleManager;
-    public static FileManager fileManager;
-    public static Thread assetThread;
     public static FontManager fontManager;
 
     public static CFontRenderer fontRenderer;
@@ -78,7 +73,6 @@ public class Main {
     public void preInit(FMLPreInitializationEvent E) throws IOException {
 
 
-        assetThread = new AssetUtils().getThread();
         logger.info("   ____      _        _           _      ____ _ _            _  ");
         logger.info("  / ___|__ _| |_ __ _| |_   _ ___| |_   / ___| (_) ___ _ __ | |_ ");
         logger.info(" | |   / _` | __/ _` | | | | / __| __| | |   | | |/ _ \\ '_ \\| __|");
@@ -120,38 +114,28 @@ public class Main {
         altConfig = new Configuration(E.getSuggestedConfigurationFile());
         altConfig.load();
         syncConfig();
-        if (!E.getModMetadata().version.equals("${version}"))//Dev environment needs to use a local list, to avoid issues
-            Standards.updateFolder();
-        else
-            logger.info("Dev environment detected!");
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent E) throws IOException {
-        try {
-            assetThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         if (initCount > 0) {
             return;
         }
         Standards.importAccounts();
         TimerManager.INSTANCE = new TimerManager();
         moduleManager = new ModuleManager();
+        FileManager.init();
         luaManager = new LuaManager();
-        fileManager = new FileManager();
         fontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 20), true, true);
         smallFontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 15), true, true);
         AccountManager.init();
-
 
         initCount++;
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent E){
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + "gui" + File.separator + "watermark.png");
+        File file = FileManager.getAssetFile("gui" + File.separator + "watermark.png");
 
         Display.setTitle(NAME + " " + VERSION);
 

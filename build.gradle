@@ -1,3 +1,5 @@
+import org.gradle.process.internal.ExecException
+
 buildscript {
     repositories {
         //jcenter()
@@ -20,7 +22,28 @@ apply plugin: "org.jetbrains.gradle.plugin.idea-ext"
 
 group = project.mod_group
 archivesBaseName = project.mod_name
-version = project.mod_version
+version = { ->
+    def pattern = 'v[0-9]*'
+    def fallback = 'indev'
+    def result = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'describe', '--tags', '--abbrev=0', '--match', pattern
+            ignoreExitValue = true
+            standardOutput = result
+            // void stderr
+            errorOutput = new OutputStream() {
+                @Override
+                void write(int b) throws IOException {}
+            }
+        }
+    } catch (ExecException ignored) {
+        ignored.printStackTrace()
+        println 'No git tag found with format \'' + pattern + '\', using fallback version identifier \'' + fallback + '\'.'
+        return fallback
+    }
+    return result.toString().trim().replaceFirst('v', '')
+}()
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
@@ -46,7 +69,7 @@ minecraft {
 
     replaceIn "com/krazzzzymonkey/catalyst/Main.java"
     replace "@modid@", project.mod_id
-    replace "@version@", project.mod_version
+    replace "@version@", project.version
     replace "@name@", project.mod_name
 }
 
@@ -169,13 +192,12 @@ jar {
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {
     from(zipTree(shadowJar.archivePath)) {
-        include "assets/minecraft/catalyst/mainmenu/config.json"
         include "com/krazzzzymonkey/**"
         include "mixins.catalyst.json"
         include "mixins.catalyst.refmap.json"
     }
     baseName = project.mod_name
-    version = project.mod_version
+    version = project.version
     classifier = "loader"
     manifest = jar.manifest
 }

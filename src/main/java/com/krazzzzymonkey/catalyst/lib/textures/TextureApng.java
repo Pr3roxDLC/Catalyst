@@ -5,6 +5,7 @@ import com.krazzzzymonkey.catalyst.ellerton.japng.argb8888.Argb8888Bitmap;
 import com.krazzzzymonkey.catalyst.ellerton.japng.argb8888.Argb8888BitmapSequence;
 import com.krazzzzymonkey.catalyst.ellerton.japng.argb8888.Argb8888BitmapSequence.Frame;
 import com.krazzzzymonkey.catalyst.ellerton.japng.chunks.PngAnimationControl;
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -42,7 +43,7 @@ public class TextureApng implements ITexture
 	{
         textureString = textureString.replace('/', File.separatorChar);
 
-        File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + textureString);
+        File file = FileManager.getAssetFile(textureString);
         try {
             rl = Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file)));
         } catch (IOException e) {

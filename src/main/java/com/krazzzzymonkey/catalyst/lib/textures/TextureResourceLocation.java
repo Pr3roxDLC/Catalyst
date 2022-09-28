@@ -1,5 +1,6 @@
 package com.krazzzzymonkey.catalyst.lib.textures;
 
+import com.krazzzzymonkey.catalyst.managers.FileManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
@@ -22,7 +23,7 @@ public class TextureResourceLocation extends ResourceLocation implements ITextur
     @Override
     public void bind() {
         if (resources.get(textureString) == null) {
-            File file = new File(System.getProperty("user.home") + File.separator + "Catalyst" + File.separator + "assets" + File.separator + textureString);
+            File file = FileManager.getAssetFile(textureString);
             try {
                 resources.put(textureString, Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file))));
             } catch (IOException e) {

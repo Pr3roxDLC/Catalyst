@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+*.gif binary
+*.png binary
+
+*.dll binary
+*.so binary
+
+*.jar binary
+*.zip binary

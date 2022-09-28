@@ -5,6 +5,7 @@
 
 # git
 !/**/.gitkeep
+!/.gitattributes
 !/.gitignore
 !/.gitmodules
 
@@ -22,8 +23,6 @@
 
 # misc
 !/.github/**
-!/.binscure/**
 !/scripts/**
-!/*.md
 !/.editorconfig
-!/LICENSE
+!/README.md
