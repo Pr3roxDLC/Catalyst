@@ -121,12 +121,10 @@ public class Main {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent E) throws IOException {
-
-        // TODO: load and dump assets
-
         if (initCount > 0) {
             return;
         }
+        FileManager.init();
         Standards.importAccounts();
         TimerManager.INSTANCE = new TimerManager();
         moduleManager = new ModuleManager();
@@ -134,8 +132,6 @@ public class Main {
         fontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 20), true, true);
         smallFontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 15), true, true);
         AccountManager.init();
-        FileManager.init();
-
 
         initCount++;
     }
