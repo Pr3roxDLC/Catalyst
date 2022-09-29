@@ -32,7 +32,7 @@ import java.util.ArrayList;
 @Mixin(GuiMainMenu.class)
 public class MixinGuiMainMenu extends GuiScreen {
 
-    File fragShaderFile = FileManager.getAssetFile("shader/fragment.fsh");
+    File fragShaderFile = FileManager.getAssetFile("shader" + File.separator + "fragment.fsh");
 
 
     private GLSLSandboxShader backgroundShader;
@@ -74,7 +74,7 @@ public class MixinGuiMainMenu extends GuiScreen {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     void constructorReturn(CallbackInfo ci) {
-        File file = FileManager.getAssetFile("mainmenu/minecraft.png");
+        File file = FileManager.getAssetFile("mainmenu" + File.separator + "minecraft.png");
         try {
             if (ModuleManager.getModule("CustomMainMenu").isToggledValue("CustomLogo") && ModuleManager.getModule("CustomMainMenu").isToggled()) {
                 MINECRAFT_TITLE_TEXTURES = Minecraft.getMinecraft().getRenderManager().renderEngine.getDynamicTextureLocation(file.getName(), new DynamicTexture(ImageIO.read(file)));

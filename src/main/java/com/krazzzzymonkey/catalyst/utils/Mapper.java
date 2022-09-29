@@ -75,7 +75,7 @@ public class Mapper {
     }
 
     public Mapper() {
-        File file = FileManager.getAssetFile("lua/mappings.srg");
+        File file = FileManager.getAssetFile("lua" + File.separator + "mappings.srg");
         try {
             Files.lines(file.toPath()).forEach(line -> {
                 if (line.startsWith("FD:")) {

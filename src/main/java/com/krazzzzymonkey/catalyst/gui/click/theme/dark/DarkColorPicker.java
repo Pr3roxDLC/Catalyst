@@ -34,9 +34,9 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 public class DarkColorPicker extends ComponentRenderer {
     boolean clicking = false;
 
-    File file = FileManager.getAssetFile("gui/colorline.png");
-    File file2 = FileManager.getAssetFile("gui/colortransparent.png");
-    File file3 = FileManager.getAssetFile("gui/colortransparentoverlay.png");
+    File file = FileManager.getAssetFile("gui" + File.separator + "colorline.png");
+    File file2 = FileManager.getAssetFile("gui" + File.separator + "colortransparent.png");
+    File file3 = FileManager.getAssetFile("gui" + File.separator + "colortransparentoverlay.png");
 
     ResourceLocation resourceLocation;
     ResourceLocation transparentResourceLocation;

@@ -35,7 +35,7 @@ public class CustomMainMenu extends Modules {
         File defaultShader = new File(SHADER_DIR, "default.fsh");
         if(!defaultShader.exists()){
             //Grab default shader from the userdir in case it doesnt exist (as a fallback)
-            File fragShaderFile = FileManager.getAssetFile("shader/fragment.fsh");
+            File fragShaderFile = FileManager.getAssetFile("shader" + File.separator + "fragment.fsh");
             try {
                 FileUtils.copyFile(fragShaderFile, defaultShader);
             } catch (IOException e) {

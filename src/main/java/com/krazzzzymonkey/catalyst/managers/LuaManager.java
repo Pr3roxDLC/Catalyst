@@ -29,7 +29,7 @@ public class LuaManager {
         File moduleDir = new File(CATALYST_DIR + "/Modules/");
         moduleDir.getParentFile().mkdirs();
         try {
-            FileUtils.copyFile(FileManager.getAssetFile("lua/HotbarRandomizer.lua"),
+            FileUtils.copyFile(FileManager.getAssetFile("lua" + File.separator + "HotbarRandomizer.lua"),
                                new File(moduleDir, "HotbarRandomizer.lua"));
         } catch (IOException e) {
             throw new RuntimeException(e);

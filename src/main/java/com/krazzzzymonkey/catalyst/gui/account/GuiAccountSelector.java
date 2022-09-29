@@ -356,7 +356,7 @@ public class GuiAccountSelector extends GuiScreen {
             super(mcIn, GuiAccountSelector.this.width, GuiAccountSelector.this.height, 32, GuiAccountSelector.this.height - 64, 36);
         }
 
-        File file = FileManager.getAssetFile("mainmenu/steve.png");
+        File file = FileManager.getAssetFile("mainmenu" + File.separator + "steve.png");
 
         ResourceLocation steve;
         HashMap<String, BufferedImage> avatar = new HashMap<>();

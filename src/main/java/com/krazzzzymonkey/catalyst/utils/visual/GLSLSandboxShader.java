@@ -25,7 +25,7 @@ public class GLSLSandboxShader {
         int program = glCreateProgram();
 
 
-        File file = FileManager.getAssetFile("shader/passthrough.vsh");
+        File file = FileManager.getAssetFile("shader" + File.separator + "passthrough.vsh");
 
         inputStream = new FileInputStream(file);
         glAttachShader(program, createShader(inputStream, GL_VERTEX_SHADER));

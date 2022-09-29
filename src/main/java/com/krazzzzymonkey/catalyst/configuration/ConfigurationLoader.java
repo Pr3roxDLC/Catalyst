@@ -29,7 +29,7 @@ public class ConfigurationLoader {
             configFolder.mkdir();
         }
 
-        FileUtils.copyFile(getAssetFile("mainmenu/config.json"), new File(configFolder, "mainmenu.json"));
+        FileUtils.copyFile(getAssetFile("mainmenu" + File.separator + "config.json"), new File(configFolder, "mainmenu.json"));
 
 
         File[] jsonFiles = configFolder.listFiles();

@@ -1,7 +1,5 @@
 package com.krazzzzymonkey.catalyst;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.krazzzzymonkey.catalyst.configuration.Config;
 import com.krazzzzymonkey.catalyst.configuration.ConfigurationLoader;
 import com.krazzzzymonkey.catalyst.events.ClientEvents;
@@ -11,10 +9,8 @@ import com.krazzzzymonkey.catalyst.managers.*;
 import com.krazzzzymonkey.catalyst.managers.accountManager.AccountManager;
 import com.krazzzzymonkey.catalyst.managers.accountManager.Standards;
 import com.krazzzzymonkey.catalyst.managers.accountManager.config.ConfigValues;
-import com.krazzzzymonkey.catalyst.managers.TimerManager;
 import com.krazzzzymonkey.catalyst.utils.font.CFontRenderer;
 import com.krazzzzymonkey.catalyst.utils.visual.ColorUtils;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -30,7 +26,8 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
 import static com.krazzzzymonkey.catalyst.managers.FileManager.CATALYST_DIR;
 
@@ -138,7 +135,7 @@ public class Main {
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent E){
-        File file = FileManager.getAssetFile("gui/watermark.png");
+        File file = FileManager.getAssetFile("gui" + File.separator + "watermark.png");
 
         Display.setTitle(NAME + " " + VERSION);
 

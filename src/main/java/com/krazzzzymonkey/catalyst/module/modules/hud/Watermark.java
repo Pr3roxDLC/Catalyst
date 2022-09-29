@@ -41,7 +41,7 @@ public class Watermark extends Modules {
     private DoubleValue scale;
 
 
-    File file = FileManager.getAssetFile("gui/watermark.png");
+    File file = FileManager.getAssetFile("gui" + File.separator + "watermark.png");
 
     ResourceLocation resource;
 
