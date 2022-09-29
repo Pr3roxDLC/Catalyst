@@ -169,7 +169,6 @@ jar {
 
 task loaderJar(type: Jar, dependsOn: shadowJar) {
     from(zipTree(shadowJar.archivePath)) {
-        include "assets/minecraft/catalyst/mainmenu/config.json"
         include "com/krazzzzymonkey/**"
         include "mixins.catalyst.json"
         include "mixins.catalyst.refmap.json"

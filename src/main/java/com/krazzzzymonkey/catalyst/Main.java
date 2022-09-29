@@ -124,10 +124,10 @@ public class Main {
         if (initCount > 0) {
             return;
         }
-        FileManager.init();
         Standards.importAccounts();
         TimerManager.INSTANCE = new TimerManager();
         moduleManager = new ModuleManager();
+        FileManager.init();
         luaManager = new LuaManager();
         fontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 20), true, true);
         smallFontRenderer = new CFontRenderer(new Font(FontManager.font, Font.PLAIN, 15), true, true);

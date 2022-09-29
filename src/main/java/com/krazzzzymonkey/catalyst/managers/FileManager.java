@@ -17,9 +17,7 @@ import com.krazzzzymonkey.catalyst.value.types.ModeValue;
 import com.krazzzzymonkey.catalyst.value.types.SubMenu;
 import com.krazzzzymonkey.catalyst.xray.XRayData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResource;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class FileManager {
 
@@ -58,25 +55,22 @@ public class FileManager {
     private static final File INVENTORY_CLEANER = new File(CATALYST_DIR, "inventorycleaner.json");
 
     public static @Nullable File getAssetFile(@Nonnull String path) {
-        ResourceLocation location = new ResourceLocation("catalyst", path);
-        IResource resource;
+        File file = new File(ASSET_DIR + path);
+        Main.logger.info("Providing asset: " + file.getPath());
+        if (file.exists()) return file;
         try {
-            resource = mc.resourceManager.getResource(location);
-        } catch (IOException e) {
+            Main.logger.info("Creating asset from default resource: " + path);
+            file.getParentFile().mkdirs();
+            FileUtils.copyInputStreamToFile(resourceAsStream(path), file);
+        } catch (IOException | SecurityException e) {
             Main.logger.info(e.getMessage());
             return null;
         }
-        File file = new File(ASSET_DIR + location.getPath());
-        if (!file.exists()) {
-            try {
-                file.mkdirs();
-                FileUtils.copyInputStreamToFile(resource.getInputStream(), file);
-            } catch (IOException | SecurityException e) {
-                Main.logger.info(e.getMessage());
-                return null;
-            }
-        }
         return file;
+    }
+
+    private static InputStream resourceAsStream(String path) {
+        return FileManager.class.getClassLoader().getResourceAsStream("assets/catalyst/" + path);
     }
 
     private static void loadInventoryCleaner() {
