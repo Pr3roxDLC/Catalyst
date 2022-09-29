@@ -55,8 +55,7 @@ public class FileManager {
     private static final File INVENTORY_CLEANER = new File(CATALYST_DIR, "inventorycleaner.json");
 
     public static @Nullable File getAssetFile(@Nonnull String path) {
-        File file = new File(ASSET_DIR + path);
-        Main.logger.info("Providing asset: " + file.getPath());
+        File file = new File(ASSET_DIR + "/" + path);
         if (file.exists()) return file;
         try {
             Main.logger.info("Creating asset from default resource: " + path);
