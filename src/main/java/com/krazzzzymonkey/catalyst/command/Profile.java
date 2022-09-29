@@ -5,6 +5,7 @@ import com.krazzzzymonkey.catalyst.managers.ProfileManager;
 import com.krazzzzymonkey.catalyst.utils.ChatColor;
 import com.krazzzzymonkey.catalyst.utils.visual.ChatUtils;
 
+import java.io.File;
 import java.util.Objects;
 
 public class Profile extends Command {
@@ -37,9 +38,11 @@ public class Profile extends Command {
                 }
             } else if (args[0].equalsIgnoreCase("list")) {
                 ChatUtils.normalMessage("Profile List:");
-                for (int i = 0; i < Objects.requireNonNull(FileManager.PROFILES_DIR.listFiles()).length; i++) {
-                    if (Objects.requireNonNull(FileManager.PROFILES_DIR.listFiles())[i].isFile()) {
-                        ChatUtils.normalMessage(Objects.requireNonNull(FileManager.PROFILES_DIR.listFiles())[i].getName().replace(".json", ""));
+                File[] files = FileManager.PROFILES_DIR.toFile().listFiles();
+                Objects.requireNonNull(files);
+                for (File file : files) {
+                    if (file.isFile()) {
+                        ChatUtils.normalMessage(file.getName().replace(".json", ""));
                     }
                 }
             }

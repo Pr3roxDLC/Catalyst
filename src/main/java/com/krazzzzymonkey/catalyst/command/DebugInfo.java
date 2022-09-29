@@ -63,7 +63,7 @@ public class DebugInfo extends Command {
                 paste.addContent("options.txt", "options.txt not a file or not readable");
             }
 
-            File hacksConfig = new File(FileManager.CATALYST_DIR, "hacks.json");
+            File hacksConfig = FileManager.CATALYST_DIR.resolve("hacks.json").toFile();
             if (hacksConfig.isFile() && hacksConfig.canRead()) {
                 try {
                     paste.addContent("hacks.json", Files

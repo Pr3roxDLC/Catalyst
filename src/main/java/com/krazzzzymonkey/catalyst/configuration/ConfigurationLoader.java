@@ -1,15 +1,16 @@
 package com.krazzzzymonkey.catalyst.configuration;
 
-import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.krazzzzymonkey.catalyst.gui.GuiCustom;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import static com.krazzzzymonkey.catalyst.managers.FileManager.CATALYST_DIR;
 import static com.krazzzzymonkey.catalyst.managers.FileManager.getAssetFile;
@@ -24,7 +25,7 @@ public class ConfigurationLoader {
     public void load() throws Exception {
         JsonParser jsonParser = new JsonParser();
 
-        File configFolder = new File(CATALYST_DIR, "CatalystMainMenu");
+        File configFolder = CATALYST_DIR.resolve("CatalystMainMenu").toFile();
         if (!configFolder.exists()) {
             configFolder.mkdir();
         }

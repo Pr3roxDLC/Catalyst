@@ -23,11 +23,12 @@ public final class Standards {
 	public static final String pwdn = "catalyst alts.encrypted";
 
 	public static String getPassword(){
-		File passwordFile = new File(ALT_DIR, pwdn);
-		if(passwordFile.exists()){
+		File passwordFile = ALT_DIR.resolve(pwdn).toFile();
+        Path passFile = passwordFile.toPath();
+        if(passwordFile.exists()){
 			String pass;
 			try {
-				ObjectInputStream stream = new ObjectInputStream(new FileInputStream(passwordFile));
+				ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(passFile));
 				pass = (String) stream.readObject();
 				stream.close();
 			} catch (IOException | ClassNotFoundException e) {
@@ -36,17 +37,16 @@ public final class Standards {
 			return pass;
 		}else{
 			String newPass = EncryptionTools.generatePassword();
-			try {
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(passwordFile));
+            try {
+				ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(passFile));
 				out.writeObject(newPass);
 				out.close();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 			try{
-				Path file = passwordFile.toPath();
-				DosFileAttributes attr = Files.readAttributes(file, DosFileAttributes.class);
-				DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class);
+                DosFileAttributes attr = Files.readAttributes(passFile, DosFileAttributes.class);
+				DosFileAttributeView view = Files.getFileAttributeView(passFile, DosFileAttributeView.class);
 				if(!attr.isHidden())
 					view.setHidden(true);
 			}catch(Exception e){
@@ -100,11 +100,11 @@ public final class Standards {
 	}
 
 	private static Config getConfigV3() {
-		File f = new File(ALT_DIR, ".ias");
+		File f = ALT_DIR.resolve(".ias").toFile();
 		Config cfg = null;
 
 			try {
-				ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+				ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(f.toPath()));
 				cfg = (Config) stream.readObject();
 				stream.close();
 			} catch (IOException | ClassNotFoundException e) {
@@ -116,12 +116,12 @@ public final class Standards {
 	}
 
 	private static Config getConfigV2() {
-		File f = new File(ALT_DIR, ".ias");
+		File f = ALT_DIR.resolve(".ias").toFile();
 		Config cfg = null;
 		if (f.exists()) {
 			Main.logger.info(f.getName() + "Exists");
 			try {
-				ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+				ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(f.toPath()));
 				cfg = (Config) stream.readObject();
 				stream.close();
 			} catch (IOException | ClassNotFoundException e) {
@@ -133,11 +133,11 @@ public final class Standards {
 	}
 
 	private static Config getConfigV1(){
-		File f = new File(ALT_DIR, "user.cfg");
+		File f = ALT_DIR.resolve("user.cfg").toFile();
 		Config cfg = null;
 		if (f.exists()) {
 			try {
-				ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+				ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(f.toPath()));
 				cfg = (Config) stream.readObject();
 				stream.close();
 			} catch (IOException | ClassNotFoundException e) {

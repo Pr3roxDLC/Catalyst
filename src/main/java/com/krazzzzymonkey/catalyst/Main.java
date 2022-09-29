@@ -26,10 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-
-import static com.krazzzzymonkey.catalyst.managers.FileManager.CATALYST_DIR;
 
 
 @Mod(modid = Main.MODID, name = Main.NAME, version = Main.VERSION, clientSideOnly = true, guiFactory = "com.krazzzzymonkey.catalyst.managers.accountManager.config.GuiFactory", acceptableRemoteVersions = "*")
@@ -50,7 +47,6 @@ public class Main {
     public static final String VERSION = "@version@";
     public static int initCount = 0;
     public static ModuleManager moduleManager;
-    public static FontManager fontManager;
 
     public static CFontRenderer fontRenderer;
     public static CFontRenderer smallFontRenderer;
@@ -66,11 +62,8 @@ public class Main {
     private ConfigurationLoader configLoader;
     public static Config config;
 
-
-    public File configFolder;
-
     @EventHandler
-    public void preInit(FMLPreInitializationEvent E) throws IOException {
+    public void preInit(FMLPreInitializationEvent E) {
 
 
         logger.info("   ____      _        _           _      ____ _ _            _  ");
@@ -80,7 +73,6 @@ public class Main {
         logger.info("  \\____\\__,_|\\__\\__,_|_|\\__, |___/\\__|  \\____|_|_|\\___|_| |_|\\__|");
         logger.info("                        |___/                                    ");
         Display.setTitle("Initializing " + NAME + " " + VERSION);
-        configFolder = CATALYST_DIR;
         config = new Config();
         // Load Transparent
 
@@ -135,7 +127,7 @@ public class Main {
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent E){
-        File file = FileManager.getAssetFile("gui" + File.separator + "watermark.png");
+        // File file = FileManager.getAssetFile("gui" + File.separator + "watermark.png");
 
         Display.setTitle(NAME + " " + VERSION);
 

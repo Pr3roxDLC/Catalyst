@@ -16,13 +16,13 @@ import com.krazzzzymonkey.catalyst.value.types.ColorValue;
 import com.krazzzzymonkey.catalyst.value.types.ModeValue;
 import com.krazzzzymonkey.catalyst.value.types.SubMenu;
 import com.krazzzzymonkey.catalyst.xray.XRayData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,35 +30,31 @@ import java.util.Objects;
 
 public class FileManager {
 
-    public static final File CATALYST_DIR = new File(String.format("%s%s%s%s",
-                                                                   Wrapper.INSTANCE.mc().gameDir,
-                                                                   File.separator,
-                                                                   Main.NAME,
-                                                                   File.separator));
-    public static final File ASSET_DIR = new File(CATALYST_DIR + "/Assets/");
-    private static final Minecraft mc = Minecraft.getMinecraft();
-
-    public static final File ALT_DIR = new File(CATALYST_DIR + "/Catalyst Account Manager/");
-    public static final File PROFILES_DIR = new File(CATALYST_DIR + "/Profiles/");
-    private static final File HACKS = new File(PROFILES_DIR, "default.json");
-    public static final File CLICKGUI = new File(CATALYST_DIR, "clickgui.json");
+    public static final Path CATALYST_DIR = Wrapper.INSTANCE.mc().gameDir.toPath().resolve(Main.NAME);
+    public static final Path ASSET_DIR = CATALYST_DIR.resolve("Assets");
+    public static final Path ALT_DIR = CATALYST_DIR.resolve("Catalyst Account Manager");
+    public static final Path PROFILES_DIR = CATALYST_DIR.resolve("Profiles");
+    private static final File HACKS = PROFILES_DIR.resolve("default.json").toFile();
+    public static final File CLICKGUI = CATALYST_DIR.resolve("clickgui.json").toFile();
     private static final Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
     private static final JsonParser jsonParser = new JsonParser();
-    private static final File CHATMENTION = new File(CATALYST_DIR, "chatmention.json");
-    private static final File AUTOGGMESSAGES = new File(CATALYST_DIR, "ggmessages.txt");
-    private static final File XRAYDATA = new File(CATALYST_DIR, "xraydata.json");
-    private static final File FRIENDS = new File(CATALYST_DIR, "friends.json");
-    private static final File ENEMYS = new File(CATALYST_DIR, "enemys.json");
-    private static final File PREFIX = new File(CATALYST_DIR, "prefix.json");
-    private static final File CURRENTPROFILE = new File(CATALYST_DIR, "currentprofile.json");
-    private static final File FONT = new File(CATALYST_DIR, "font.json");
-    private static final File INVENTORY_CLEANER = new File(CATALYST_DIR, "inventorycleaner.json");
+    private static final File CHATMENTION = CATALYST_DIR.resolve("chatmention.json").toFile();
+    private static final File AUTOGGMESSAGES = CATALYST_DIR.resolve("ggmessages.txt").toFile();
+    private static final File XRAYDATA = CATALYST_DIR.resolve("xraydata.json").toFile();
+    private static final File FRIENDS = CATALYST_DIR.resolve("friends.json").toFile();
+    private static final File ENEMYS = CATALYST_DIR.resolve("enemys.json").toFile();
+    private static final File PREFIX = CATALYST_DIR.resolve("prefix.json").toFile();
+    private static final File CURRENTPROFILE = CATALYST_DIR.resolve("currentprofile.json").toFile();
+    private static final File FONT = CATALYST_DIR.resolve("font.json").toFile();
+    private static final File INVENTORY_CLEANER = CATALYST_DIR.resolve("inventorycleaner.json").toFile();
 
     public static @Nullable File getAssetFile(@Nonnull String path) {
+        Main.logger.info("Requesting asset: " + path);
         File file = new File(ASSET_DIR + File.separator + path);
+        Main.logger.info("Loading asset file: " + file.getPath());
         if (file.exists()) return file;
         try {
-            Main.logger.info("Creating asset from default resource: " + path);
+            Main.logger.info("Asset not found locally, creating from default resource: " + path);
             file.getParentFile().mkdirs();
             FileUtils.copyInputStreamToFile(resourceAsStream(path), file);
         } catch (IOException | SecurityException e) {
@@ -78,9 +74,8 @@ public class FileManager {
             loadJson = new BufferedReader(new FileReader(INVENTORY_CLEANER));
             JsonObject jsonObject = (JsonObject) jsonParser.parse(loadJson);
             loadJson.close();
-            jsonObject.get("items").getAsJsonArray().iterator().forEachRemaining(n -> {
-                InventoryCleaner.listItems.add(Item.getByNameOrId(n.getAsString()));
-            });
+            jsonObject.get("items").getAsJsonArray().iterator().forEachRemaining(n -> InventoryCleaner.listItems.add(
+                Item.getByNameOrId(n.getAsString())));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -167,7 +162,7 @@ public class FileManager {
     }
 
     public static void loadPrefix() {
-        BufferedReader loadJson = null;
+        BufferedReader loadJson;
         try {
             loadJson = new BufferedReader(new FileReader(PREFIX));
             JsonObject moduleJason = (JsonObject) jsonParser.parse(loadJson);
@@ -200,8 +195,8 @@ public class FileManager {
         try {
             BufferedReader loadJson = new BufferedReader(new FileReader(HACKS));
             if (!profile.equals("")) {
-                if (new File(PROFILES_DIR, profile + ".json").exists()) {
-                    loadJson = new BufferedReader(new FileReader(new File(PROFILES_DIR, profile + ".json")));
+                if (PROFILES_DIR.resolve(profile + ".json").toFile().exists()) {
+                    loadJson = new BufferedReader(new FileReader(PROFILES_DIR.resolve(profile + ".json").toFile()));
                 }
             }
 
@@ -366,7 +361,7 @@ public class FileManager {
 
                             } catch (NullPointerException e) {
                                 Main.logger.warn("Unknown Config for: " + mods.getModuleName() + ". Setting Default config!");
-                                if (new File(PROFILES_DIR, profile + ".json").exists()) {
+                                if (PROFILES_DIR.resolve(profile + ".json").toFile().exists()) {
                                     saveModules(profile);
                                 } else saveModules("default");
 
@@ -375,7 +370,7 @@ public class FileManager {
                     }
                     mods.setKey(jsonMod.get("bind").getAsJsonObject().get("key").getAsInt());
                     mods.setBindHold(jsonMod.get("bind").getAsJsonObject().get("held").getAsBoolean());
-                    if (new File(PROFILES_DIR, profile + ".json").exists()) {
+                    if (PROFILES_DIR.resolve(profile + ".json").toFile().exists()) {
                         ProfileManager.currentProfile = profile;
                     } else ProfileManager.currentProfile = "default";
                 }
@@ -618,7 +613,7 @@ public class FileManager {
                 }
                 json.add(module.getModuleName(), jsonHack);
             }
-            PrintWriter saveJson = new PrintWriter(new FileWriter(new File(PROFILES_DIR, profile + ".json")));
+            PrintWriter saveJson = new PrintWriter(new FileWriter(PROFILES_DIR.resolve(profile + ".json").toFile()));
 
             saveJson.println(gsonPretty.toJson(json));
             saveJson.close();
@@ -643,13 +638,14 @@ public class FileManager {
                 if (writer != null) {
                     writer.close();
                 }
-            } catch (Exception ex2) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
     public static List<String> read(File inputFile) {
-        ArrayList<String> readContent = new ArrayList<String>();
+        ArrayList<String> readContent = new ArrayList<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(inputFile));
@@ -662,7 +658,8 @@ public class FileManager {
                 if (reader != null) {
                     reader.close();
                 }
-            } catch (Exception ex2) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return readContent;
@@ -673,21 +670,21 @@ public class FileManager {
     }
 
     public static void reload() {
-        if (!CATALYST_DIR.exists()) {
-            CATALYST_DIR.mkdir();
+        if (!CATALYST_DIR.toFile().exists()) {
+            CATALYST_DIR.toFile().mkdir();
         }
-        if (!ALT_DIR.exists()) {
-            ALT_DIR.mkdir();
+        if (!ALT_DIR.toFile().exists()) {
+            ALT_DIR.toFile().mkdir();
         }
-        if (!PROFILES_DIR.exists()) {
-            PROFILES_DIR.mkdir();
+        if (!PROFILES_DIR.toFile().exists()) {
+            PROFILES_DIR.toFile().mkdir();
         }
         if (!CURRENTPROFILE.exists()) {
             saveCurrentProfile();
         } else {
             loadCurrentProfile();
         }
-        if (!(new File(PROFILES_DIR, ProfileManager.currentProfile + ".json").exists())) {
+        if (!(PROFILES_DIR.resolve(ProfileManager.currentProfile + ".json").toFile().exists())) {
             Main.logger.warn("Profile: " + ProfileManager.currentProfile + " does not exist! Setting default Profile");
             ProfileManager.currentProfile = "default";
             saveModules(ProfileManager.currentProfile);

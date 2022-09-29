@@ -33,7 +33,7 @@ public class Config implements Serializable {
     }
 
     private Config() {
-        this.field_218893_c = new ArrayList<Pair<String, Object>>();
+        this.field_218893_c = new ArrayList<>();
         instance = this;
     }
 
@@ -45,7 +45,7 @@ public class Config implements Serializable {
     }
 
     public void setKey(String key, Object value) {
-        this.setKey(new Pair<String, Object>(key, value));
+        this.setKey(new Pair<>(key, value));
     }
 
     public Object getKey(String key) {
@@ -78,17 +78,13 @@ public class Config implements Serializable {
     }
 
     private static void readFromFile() {
-        File f = new File(ALT_DIR, configFileName);
+        File f = ALT_DIR.resolve(configFileName).toFile();
         if (f.exists()) {
             try {
-                ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+                ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(f.toPath()));
                 instance = (Config) stream.readObject();
                 stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                instance = new Config();
-                f.delete();
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
                 instance = new Config();
                 f.delete();
@@ -100,25 +96,26 @@ public class Config implements Serializable {
 
     private static void saveToFile() {
         try{
-            Path file = new File(ALT_DIR, configFileName).toPath();
+            Path file = ALT_DIR.resolve(configFileName);
             DosFileAttributes attr = Files.readAttributes(file, DosFileAttributes.class);
             DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class);
             if(attr.isHidden())
                 view.setHidden(false);
-        }catch(NoSuchFileException e) {
-
-        }catch(Exception e){
+        } catch(Exception e) {
             e.printStackTrace();
+
         }
         try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(new File(ALT_DIR, configFileName)));
+            ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(ALT_DIR.resolve(configFileName)
+                                                                                         .toFile()
+                                                                                         .toPath()));
             out.writeObject(instance);
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         try{
-            Path file = new File(ALT_DIR, configFileName).toPath();
+            Path file = ALT_DIR.resolve(configFileName);
             DosFileAttributes attr = Files.readAttributes(file, DosFileAttributes.class);
             DosFileAttributeView view = Files.getFileAttributeView(file, DosFileAttributeView.class);
             if(!attr.isHidden())
@@ -132,15 +129,12 @@ public class Config implements Serializable {
         File f = new File(Minecraft.getMinecraft().gameDir, "user.cfg");
         if (f.exists()) {
             try {
-                ObjectInputStream stream = new ObjectInputStream(new FileInputStream(f));
+                ObjectInputStream stream = new ObjectInputStream(Files.newInputStream(f.toPath()));
                 instance = (Config) stream.readObject();
                 stream.close();
                 f.delete();
                 Main.logger.info("Loaded data from old file");
-            } catch (IOException e) {
-                e.printStackTrace();
-                f.delete();
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
                 f.delete();
             }
