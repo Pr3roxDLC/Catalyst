@@ -65,7 +65,9 @@ public class FileManager {
     }
 
     private static InputStream resourceAsStream(String path) {
-        return FileManager.class.getClassLoader().getResourceAsStream("assets/catalyst/" + path);
+        String resourcePath = path.replaceAll(File.separator, "/");
+        Main.logger.info("Loading resource from jar: " + resourcePath);
+        return FileManager.class.getClassLoader().getResourceAsStream("assets/catalyst/" + resourcePath);
     }
 
     private static void loadInventoryCleaner() {
