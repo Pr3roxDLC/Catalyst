@@ -1,0 +1,21 @@
+name: '🧑‍🏭'
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      #- uses: gradle/wrapper-validation-action@v1
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          check-latest: true
+          cache: 'gradle'
+      #- run: ./gradlew build --console plain --no-daemon --full-stacktrace
+      - uses: softprops/action-gh-release@v1
+        with:
+          body: 'Release generated at commit: ${{ github.sha }}'
