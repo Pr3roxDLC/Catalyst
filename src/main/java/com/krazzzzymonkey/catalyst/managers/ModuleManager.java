@@ -64,7 +64,7 @@ public class ModuleManager {
         addModule(new FakePlayer());
         //addModule(new AutoDupe());
         addModule(new ArmorHUD());
-        addModule(new CustomMainMenu());
+        //addModule(new CustomMainMenu());
         addModule(new AcidMode());
         addModule(new LostFocus());
         addModule(new SafeWalk());

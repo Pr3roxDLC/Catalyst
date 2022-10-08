@@ -91,13 +91,10 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new RotationManager());
 
 
-        EVENT_HANDLER = new CMMEventHandler();
         ColorEvents = new ColorUtils();
         notificationManager = new NotificationManager();
 
-        MinecraftForge.EVENT_BUS.register(EVENT_HANDLER);
         MinecraftForge.EVENT_BUS.register(ColorEvents);
-        FMLCommonHandler.instance().bus().register(EVENT_HANDLER);
         FMLCommonHandler.instance().bus().register(ColorEvents);
         ModuleManager.EVENT_MANAGER.register(notificationManager);
         ModuleManager.EVENT_MANAGER.register(clientEvents);
@@ -151,11 +148,8 @@ public class Main {
         configLoader = new ConfigurationLoader(config);
         try {
             configLoader.load();
-            EVENT_HANDLER.displayMs = -1;
         } catch (Exception e) {
             e.printStackTrace();
-
-            EVENT_HANDLER.displayMs = System.currentTimeMillis();
             logger.log(Level.ERROR, "Error while loading new config file, trying to keep the old one loaded.");
             config = backup;
         }
