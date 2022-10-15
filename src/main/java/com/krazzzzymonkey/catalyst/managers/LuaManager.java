@@ -26,7 +26,7 @@ public class LuaManager {
     }
 
     public void registerScriptedModules() {
-        File moduleDir = new File(CATALYST_DIR + "/Modules/");
+        File moduleDir = new File(CATALYST_DIR + "/Modules");
         moduleDir.getParentFile().mkdirs();
         try {
             FileUtils.copyFile(FileManager.getAssetFile("lua" + File.separator + "HotbarRandomizer.lua"),

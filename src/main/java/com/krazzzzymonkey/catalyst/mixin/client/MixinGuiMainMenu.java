@@ -89,7 +89,7 @@ public class MixinGuiMainMenu extends GuiScreen {
             //TODO replace this with a ReflectionsCall to ModuleManger for Loader Compatability
             //System.out.println(file.getAbsolutePath());
             //FUCK ME, took me 2 hrs to figure out why this wasnt compiling, turns out i was trying to compile the PNG from file because i had the wrong variable
-            File shaderDir = new File(String.format("%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Shader", File.separator));
+            File shaderDir = new File(String.format("%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Shader"));
             this.backgroundShader = new GLSLSandboxShader(shaderDir.getAbsolutePath() + File.separator + ModuleManager.getModule("CustomMainMenu").getToggledMode("Shader").getName());
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load backgound shader", e);
