@@ -24,7 +24,7 @@ public class CustomMainMenu extends Modules {
     public static BooleanValue logo = new BooleanValue("CustomLogo", true, "Replaces the Minecraft Logo with a custom Logo");
     public static ModeValue shader;
 
-    public static final File SHADER_DIR = new File(String.format("%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Shader", File.separator));
+    public static final File SHADER_DIR = new File(String.format("%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Shader"));
 
     public CustomMainMenu() {
         super("CustomMainMenu", ModuleCategory.RENDER, "Toggles Catalyst Main Menu");

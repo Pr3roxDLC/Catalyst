@@ -31,10 +31,10 @@ public class Sounds extends Modules {
     public static ModeValue explosionSoundMode;
     public static Random random = new Random();
 
-    public static final File KILL_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "KillSounds", File.separator));
-    public static final File POP_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "PopSounds", File.separator));
-    public static final File HIT_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "HitSounds", File.separator));
-    public static final File EXPLOSION_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "ExplosionSounds", File.separator));
+    public static final File KILL_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "KillSounds"));
+    public static final File POP_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "PopSounds"));
+    public static final File HIT_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "HitSounds"));
+    public static final File EXPLOSION_SOUND_DIR = new File(String.format("%s%s%s%s%s%s%s", Minecraft.getMinecraft().gameDir, File.separator, Main.NAME, File.separator, "Sounds", File.separator, "ExplosionSounds"));
 
 
     public Sounds() {
