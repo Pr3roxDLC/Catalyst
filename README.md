@@ -27,9 +27,6 @@ Open the `%appdata%/.minecraft/mods` directory and place the downloaded `.jar` f
 
      gradlew build 
 
-## Note
-This client is not owned by me but by the Catalyst Client Development Team.  This is just a better set-up repository then the original Catalyst Client Repository.
-
 ## Credit
 Krazzzzymonkey - Developer/Owner 
 <br>
