@@ -5,7 +5,7 @@ Catalyst Client was a paid Minecraft 1.12.2 Hacked Client for the anarchy enviro
 
 ## Installation
 ### Step 1 : Download
-Download the latest release of the Catalyst Client from the [Releases Tab](https://github.com/PrimeTDMomega/Catalyst-Client/releases). (Download the one with the latest tag in it)
+Download the latest release of the Catalyst Client from the [Releases Tab](https://github.com/Pr3roxDLC/Catalyst/releases). (Download the one with the latest tag in it)
 
 ### Step 2 : Placement
 Open the `%appdata%/.minecraft/mods` directory and place the downloaded `.jar` file in the folder. (May not be complatable with OptiFine)
