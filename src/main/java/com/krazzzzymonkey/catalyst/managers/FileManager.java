@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
 
 public class FileManager {
 
@@ -65,7 +66,7 @@ public class FileManager {
     }
 
     private static InputStream resourceAsStream(String path) {
-        String resourcePath = path.replaceAll(File.separator, "/");
+        String resourcePath = path.replaceAll(Matcher.quoteReplacement(File.separator), "/");
         Main.logger.info("Loading resource from jar: " + resourcePath);
         return FileManager.class.getClassLoader().getResourceAsStream("assets/catalyst/" + resourcePath);
     }
