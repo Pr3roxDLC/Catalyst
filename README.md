@@ -38,5 +38,3 @@ LilGanja1337      - Artwork
 <br>
 <br>
 
-PrimeTDMomega - Based Human Being
-
