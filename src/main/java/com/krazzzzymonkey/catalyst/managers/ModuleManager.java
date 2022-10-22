@@ -16,17 +16,19 @@ import com.krazzzzymonkey.catalyst.module.modules.hud.*;
 import com.krazzzzymonkey.catalyst.module.modules.misc.*;
 import com.krazzzzymonkey.catalyst.module.modules.movement.*;
 import com.krazzzzymonkey.catalyst.module.modules.player.*;
-import com.krazzzzymonkey.catalyst.module.modules.render.*;
 import com.krazzzzymonkey.catalyst.module.modules.render.XRay;
+import com.krazzzzymonkey.catalyst.module.modules.render.*;
 import com.krazzzzymonkey.catalyst.module.modules.world.*;
 import com.krazzzzymonkey.catalyst.utils.system.Wrapper;
-import com.krazzzzymonkey.catalyst.value.types.ModeValue;
 import com.krazzzzymonkey.catalyst.value.Value;
+import com.krazzzzymonkey.catalyst.value.types.ModeValue;
 import dev.tigr.simpleevents.listener.EventHandler;
 import dev.tigr.simpleevents.listener.EventListener;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -35,207 +37,204 @@ public class ModuleManager {
     private static Modules toggleModule = null;
     private static ArrayList<Modules> modules;
     private static Modules mixinProxy;
+    @EventHandler
+    private final EventListener<KeyDownEvent> onKeyDownEvent = new EventListener<>(e -> {
+        if (Wrapper.INSTANCE.mc().currentScreen != null) {
+            return;
+        }
+
+        for (Modules module : getModules()) {
+            if (module.getKey() == e.getKeyId()) {
+                module.toggle();
+                toggleModule = module;
+            }
+        }
+    });
+    @EventHandler
+    private final EventListener<KeyReleaseEvent> onKeyRelease = new EventListener<>(e -> {
+        if (Wrapper.INSTANCE.mc().currentScreen != null) {
+            return;
+        }
+
+        for (Modules module : getModules()) {
+            if (module.isBindHold() && module.isToggled()) {
+                if (module.getKey() == e.getKey()) {
+                    module.toggle();
+                    toggleModule = module;
+                }
+            }
+        }
+    });
     private GuiManager guiManager;
     private HudEditorManager hudManager;
-
     private ClickGuiScreen guiScreen;
     private HudGuiScreen hudGuiScreen;
 
     public ModuleManager() {
         MinecraftForge.EVENT_BUS.register(ModuleManager.class);
         EVENT_MANAGER.register(this);
-        modules = new ArrayList<Modules>();
-        addModule(new NoRender());
-        addModule(new Crosshair());
-        addModule(new PopChams());
-        addModule(new BossStack());
-        addModule(new Profile());
-        addModule(new XRay());
-        addModule(new SkeletonESP());
-        addModule(new Anchor());
-        addModule(new LiquidInteract());
-        addModule(new AutoWeb());
-        addModule(new ToggleMessages());
-        addModule(new Burrow());
-        addModule(new DurabilityAlert());
-        addModule(new AutoMend());
-        addModule(new BreakESP());
-        addModule(new AutoCrystalRewrite());
-        addModule(new FakePlayer());
-        //addModule(new AutoDupe());
-        addModule(new ArmorHUD());
-        addModule(new CustomMainMenu());
-        addModule(new AcidMode());
-        addModule(new LostFocus());
-        addModule(new SafeWalk());
-        addModule(new Graphs());
-        addModule(new PacketFly());
-        addModule(new NoChat());
-        addModule(new EntitySpeed());
-        addModule(new NewChunks());
-        addModule(new LogoutSpots());
-        addModule(new PortalGodMode());
-        addModule(new NoSwing());
-        addModule(new MultiTask());
-        addModule(new ShulkerPreview());
-        addModule(new AutoTool());
-        addModule(new RenderChams());
-        addModule(new ItemChams());
-        addModule(new EntityControl());
-        addModule(new NoSlow());
-        addModule(new CrystalPlaceSpeed());
-        addModule(new ReverseStep());
-        addModule(new Step());
-        addModule(new EnchantColor());
-        addModule(new CameraClip());
-        addModule(new SelfTrap());
-        addModule(new AutoQueueMain());
-        addModule(new PVPModules());
-        addModule(new IceSpeed());
-        addModule(new HoleFill());
-        addModule(new AutoTrap());
-        addModule(new NoGlobalSounds());
-        addModule(new EnderChestMiner());
-        addModule(new ObsidianReplace());
-        addModule(new AutoHotbarRefill());
-        addModule(new Surround());
-        addModule(new MapTooltip());
-        addModule(new Coordinates());
-        addModule(new Greeter());
-        addModule(new PortalChat());
-        addModule(new NoRotate());
-        addModule(new ShulkerNuker());
-        addModule(new DeathAnnouncer());
-        addModule(new AutoEat());
-        addModule(new MiddleClickFriends());
-        addModule(new VisualRange());
-        addModule(new XCarry());
-        addModule(new TotemPopCounter());
-        addModule(new FastPlace());
-        addModule(new BobIntensity());
-        addModule(new AutoRespawn());
-        addModule(new RPC());
-        addModule(new HoleESP());
-        addModule(new AutoCrystal());
-        addModule(new AutoGG());
-        addModule(new Announcer());
-        addModule(new Nametags());
-        addModule(new TabFriends());
-        addModule(new ChatSuffix());
-        addModule(new InventoryWalk());
-        addModule(new ChatTimeStamps());
-        addModule(new CustomChat());
-        addModule(new InvPreview());
-        addModule(new Timer());
-        addModule(new FancyChat());
-        addModule(new PVPInfo());
-        addModule(new FastXP());
-        addModule(new FastFall());
-        addModule(new ElytraFly());
-        addModule(new BowRelease());
-        addModule(new ActiveModules());
-        addModule(new Watermark());
-        addModule(new CustomFOV());
-        addModule(new ChatMention());
-        addModule(new LowOffHand());
-        //addModule(new LowMainHand());
-        addModule(new Trajectories());
-        addModule(new ESP());
-        addModule(new ItemESP());
-        addModule(new StorageESP());
-        addModule(new Tracers());
-        addModule(new FullBright());
-        addModule(new Insulter());
-        addModule(new Criticals());
-        addModule(new KillAura());
-        addModule(new Velocity());
-        addModule(new Reach());
-        addModule(new AutoSprint());
-        addModule(new ChestStealer());
-        addModule(new Nuker());
-        addModule(new Blink());
-        addModule(new Scaffold());
-        addModule(new Freecam());
-        addModule(new BlockOverlay());
-        addModule(new PacketCanceller());
-        addModule(new PlayerRadar());
-        addModule(new AutoWalk());
-        addModule(new Jesus());
-        addModule(new FastBreak());
-        addModule(new Disconnect());
-        addModule(new PlayerInfo());
-        addModule(new ClickGui());
-        addModule(new Offhand());
-        addModule(new CustomFont());
-        addModule(new Speed());
-        addModule(new DispenserMeta());
-      //  addModule(new NetherSky());
-        addModule(new FogColors());
-        addModule(new HudEditor());
-        addModule(new Flight());
-        addModule(new AutoArmor());
-        addModule(new HopperNuker());
-        addModule(new DonkeyDrop());
-        addModule(new DonkeyFinder());
-        addModule(new NoEntityTrace());
-        addModule(new TargetHUD());
-        addModule(new BarrierView());
-        addModule(new Breadcrumbs());
-        addModule(new Viewmodel());
-       // addModule(new CevBreaker());
-        addModule(new Sounds());
-        addModule(new PotionEffects());
-        addModule(new BurrowESP());
-        addModule(new MiddleClickPearl());
-        //addModule(new Notifications());
-        addModule(new ChorusControl());
-        addModule(new AntiLevitation());
-        addModule(new AspectRatio());
-        addModule(new PingSpoof());
-        addModule(new TunnelESP());
-        //addModule(new EntityTrails());
-        addModule(new AntiHunger());
-        addModule(new Quiver());
-       // addModule(new HoleBreakNotifier());
-       // addModule(new NewPacketFly());
-        addModule(new NoFall());
-        //addModule(new NoCluster());
-        addModule(new InventoryCleaner());
-        addModule(new PearlBait());
+        modules = new ArrayList<>();
+        addModule(NoRender.class);
+        addModule(NoRender.class);
+        addModule(Crosshair.class);
+        addModule(PopChams.class);
+        addModule(BossStack.class);
+        addModule(Profile.class);
+        addModule(XRay.class);
+        addModule(SkeletonESP.class);
+        addModule(Anchor.class);
+        addModule(LiquidInteract.class);
+        addModule(AutoWeb.class);
+        addModule(ToggleMessages.class);
+        addModule(Burrow.class);
+        addModule(DurabilityAlert.class);
+        addModule(AutoMend.class);
+        addModule(BreakESP.class);
+        addModule(AutoCrystalRewrite.class);
+        addModule(FakePlayer.class);
+        //addModule(AutoDupe.class);
+        addModule(ArmorHUD.class);
+        addModule(CustomMainMenu.class);
+        addModule(AcidMode.class);
+        addModule(LostFocus.class);
+        addModule(SafeWalk.class);
+        addModule(Graphs.class);
+        addModule(PacketFly.class);
+        addModule(NoChat.class);
+        addModule(EntitySpeed.class);
+        addModule(NewChunks.class);
+        addModule(LogoutSpots.class);
+        addModule(PortalGodMode.class);
+        addModule(NoSwing.class);
+        addModule(MultiTask.class);
+        addModule(ShulkerPreview.class);
+        addModule(AutoTool.class);
+        addModule(RenderChams.class);
+        addModule(ItemChams.class);
+        addModule(EntityControl.class);
+        addModule(NoSlow.class);
+        addModule(CrystalPlaceSpeed.class);
+        addModule(ReverseStep.class);
+        addModule(Step.class);
+        addModule(EnchantColor.class);
+        addModule(CameraClip.class);
+        addModule(SelfTrap.class);
+        addModule(AutoQueueMain.class);
+        addModule(PVPModules.class);
+        addModule(IceSpeed.class);
+        addModule(HoleFill.class);
+        addModule(AutoTrap.class);
+        addModule(NoGlobalSounds.class);
+        addModule(EnderChestMiner.class);
+        addModule(ObsidianReplace.class);
+        addModule(AutoHotbarRefill.class);
+        addModule(Surround.class);
+        addModule(MapTooltip.class);
+        addModule(Coordinates.class);
+        addModule(Greeter.class);
+        addModule(PortalChat.class);
+        addModule(NoRotate.class);
+        addModule(ShulkerNuker.class);
+        addModule(DeathAnnouncer.class);
+        addModule(AutoEat.class);
+        addModule(MiddleClickFriends.class);
+        addModule(VisualRange.class);
+        addModule(XCarry.class);
+        addModule(TotemPopCounter.class);
+        addModule(FastPlace.class);
+        addModule(BobIntensity.class);
+        addModule(AutoRespawn.class);
+        addModule(RPC.class);
+        addModule(HoleESP.class);
+        addModule(AutoCrystal.class);
+        addModule(AutoGG.class);
+        addModule(Announcer.class);
+        addModule(Nametags.class);
+        addModule(TabFriends.class);
+        addModule(ChatSuffix.class);
+        addModule(InventoryWalk.class);
+        addModule(ChatTimeStamps.class);
+        addModule(CustomChat.class);
+        addModule(InvPreview.class);
+        addModule(Timer.class);
+        addModule(FancyChat.class);
+        addModule(PVPInfo.class);
+        addModule(FastXP.class);
+        addModule(FastFall.class);
+        addModule(ElytraFly.class);
+        addModule(BowRelease.class);
+        addModule(ActiveModules.class);
+        addModule(Watermark.class);
+        addModule(CustomFOV.class);
+        addModule(ChatMention.class);
+        addModule(LowOffHand.class);
+        //addModule(LowMainHand.class);
+        addModule(Trajectories.class);
+        addModule(ESP.class);
+        addModule(ItemESP.class);
+        addModule(StorageESP.class);
+        addModule(Tracers.class);
+        addModule(FullBright.class);
+        addModule(Insulter.class);
+        addModule(Criticals.class);
+        addModule(KillAura.class);
+        addModule(Velocity.class);
+        addModule(Reach.class);
+        addModule(AutoSprint.class);
+        addModule(ChestStealer.class);
+        addModule(Nuker.class);
+        addModule(Blink.class);
+        addModule(Scaffold.class);
+        addModule(Freecam.class);
+        addModule(BlockOverlay.class);
+        addModule(PacketCanceller.class);
+        addModule(PlayerRadar.class);
+        addModule(AutoWalk.class);
+        addModule(Jesus.class);
+        addModule(FastBreak.class);
+        addModule(Disconnect.class);
+        addModule(PlayerInfo.class);
+        addModule(ClickGui.class);
+        addModule(Offhand.class);
+        addModule(CustomFont.class);
+        addModule(Speed.class);
+        addModule(DispenserMeta.class);
+        // addModule(NetherSky.class);
+        addModule(FogColors.class);
+        addModule(HudEditor.class);
+        addModule(Flight.class);
+        addModule(AutoArmor.class);
+        addModule(HopperNuker.class);
+        addModule(DonkeyDrop.class);
+        addModule(DonkeyFinder.class);
+        addModule(NoEntityTrace.class);
+        addModule(TargetHUD.class);
+        addModule(BarrierView.class);
+        addModule(Breadcrumbs.class);
+        addModule(Viewmodel.class);
+        // addModule(CevBreaker.class);
+        addModule(Sounds.class);
+        addModule(PotionEffects.class);
+        addModule(BurrowESP.class);
+        addModule(MiddleClickPearl.class);
+        //addModule(Notifications.class);
+        addModule(ChorusControl.class);
+        addModule(AntiLevitation.class);
+        addModule(AspectRatio.class);
+        addModule(PingSpoof.class);
+        addModule(TunnelESP.class);
+        //addModule(EntityTrails.class);
+        addModule(AntiHunger.class);
+        addModule(Quiver.class);
+        // addModule(HoleBreakNotifier.class);
+        // addModule(NewPacketFly.class);
+        addModule(NoFall.class);
+        //addModule(NoCluster.class);
+        addModule(InventoryCleaner.class);
+        addModule(PearlBait.class);
         modules.sort(Comparator.comparing(Modules::getModuleName));
 
     }
-
-
-
-
-    public void setGuiManager(GuiManager guiManager) {
-        this.guiManager = guiManager;
-    }
-
-    public ClickGuiScreen getGui() {
-        if (this.guiManager == null) {
-            this.guiManager = new GuiManager();
-            this.guiScreen = new ClickGuiScreen();
-            ClickGuiScreen.clickGui = this.guiManager;
-            this.guiManager.Init();
-            this.guiManager.setTheme(new DarkTheme());
-        }
-        return this.guiManager;
-    }
-
-    public HudEditorManager getHudGui() {
-        if (this.hudManager == null) {
-            this.hudManager = new HudEditorManager();
-            this.hudGuiScreen = new HudGuiScreen();
-            HudGuiScreen.hudGui = this.hudManager;
-            this.hudManager.Initialization();
-            this.hudManager.setTheme(new DarkTheme());
-        }
-
-        return this.hudManager;
-    }
-
 
     public static Modules getModule(String name) {
         Modules module = null;
@@ -288,15 +287,26 @@ public class ModuleManager {
             if (ModuleManager.getModule("CustomFont").isToggled()) {
                 cmp = Main.fontRenderer.getStringWidth(s2) - Main.fontRenderer.getStringWidth(s1);
             } else {
-                cmp = Wrapper.INSTANCE.fontRenderer().getStringWidth(s2) - Wrapper.INSTANCE.fontRenderer().getStringWidth(s1);
+                cmp = Wrapper.INSTANCE.fontRenderer().getStringWidth(s2) - Wrapper.INSTANCE.fontRenderer()
+                                                                                           .getStringWidth(s1);
             }
             return (cmp != 0) ? cmp : s2.compareTo(s1);
         });
         return list;
     }
 
-    public static void addModule(Modules module) {
-        modules.add(module);
+    public static void addModule(Class<? extends Modules> clazz) {
+        try {
+            Constructor<?> constructor = Arrays.stream(clazz.getDeclaredConstructors())
+                                               .filter(c -> c.getParameterCount() == 0)
+                                               .findAny()
+                                               .orElseThrow(() -> new IllegalArgumentException(
+                                                   "Missing no-arg constructor!"));
+            Modules instance = (Modules) constructor.newInstance();
+            modules.add(instance);
+        } catch (Throwable t) {
+            System.out.println("Loading module " + clazz.getSimpleName() + " faild with exception: " + t.getMessage());
+        }
     }
 
     public static ArrayList<Modules> getModules() {
@@ -307,44 +317,39 @@ public class ModuleManager {
         return toggleModule;
     }
 
-    @EventHandler
-    private final EventListener<KeyDownEvent> onKeyDownEvent = new EventListener<>(e -> {
-        if (Wrapper.INSTANCE.mc().currentScreen != null) {
-            return;
-        }
-
-        for (Modules module : getModules()) {
-            if (module.getKey() == e.getKeyId()) {
-                module.toggle();
-                toggleModule = module;
-            }
-        }
-    });
-
-    @EventHandler
-    private final EventListener<KeyReleaseEvent> onKeyRelease = new EventListener<>(e -> {
-        if (Wrapper.INSTANCE.mc().currentScreen != null) {
-            return;
-        }
-
-        for (Modules module : getModules()) {
-            if (module.isBindHold() && module.isToggled()) {
-                if (module.getKey() == e.getKey()) {
-                    module.toggle();
-                    toggleModule = module;
-                }
-            }
-        }
-    });
-
-
-
     public static Class getModuleClass(String clazz) {
-        for(Modules m : ModuleManager.getModules()){
-            if(m.getModuleName().equals(clazz)){
+        for (Modules m : ModuleManager.getModules()) {
+            if (m.getModuleName().equals(clazz)) {
                 return m.getClass();
             }
         }
         return null;
+    }
+
+    public void setGuiManager(GuiManager guiManager) {
+        this.guiManager = guiManager;
+    }
+
+    public ClickGuiScreen getGui() {
+        if (this.guiManager == null) {
+            this.guiManager = new GuiManager();
+            this.guiScreen = new ClickGuiScreen();
+            ClickGuiScreen.clickGui = this.guiManager;
+            this.guiManager.Init();
+            this.guiManager.setTheme(new DarkTheme());
+        }
+        return this.guiManager;
+    }
+
+    public HudEditorManager getHudGui() {
+        if (this.hudManager == null) {
+            this.hudManager = new HudEditorManager();
+            this.hudGuiScreen = new HudGuiScreen();
+            HudGuiScreen.hudGui = this.hudManager;
+            this.hudManager.Initialization();
+            this.hudManager.setTheme(new DarkTheme());
+        }
+
+        return this.hudManager;
     }
 }
