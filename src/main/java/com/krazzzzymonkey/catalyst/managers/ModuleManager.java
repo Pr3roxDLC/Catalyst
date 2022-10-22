@@ -295,6 +295,11 @@ public class ModuleManager {
         return list;
     }
 
+    @Deprecated
+    public static void addModule(Modules module) {
+        modules.add(module);
+    }
+
     public static void addModule(Class<? extends Modules> clazz) {
         try {
             Constructor<?> constructor = Arrays.stream(clazz.getDeclaredConstructors())

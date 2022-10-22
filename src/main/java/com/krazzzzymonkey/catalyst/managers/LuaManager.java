@@ -35,8 +35,8 @@ public class LuaManager {
             throw new RuntimeException(e);
         }
         Arrays.stream(moduleDir.listFiles()).filter(n -> n.getName().endsWith(".lua")).forEach(n -> {
-            //CustomModule customModule = new CustomModule(n.getName(), ModuleCategory.CUSTOM, "", n);
-            //ModuleManager.addModule(customModule);
+            CustomModule customModule = new CustomModule(n.getName(), ModuleCategory.CUSTOM, "", n);
+            ModuleManager.addModule(customModule);
         });
     }
 
