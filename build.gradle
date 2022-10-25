@@ -111,7 +111,7 @@ dependencies {
     compile group: 'club.minnced', name: 'java-discord-rpc', version: '2.0.1'
     /*compile 'com.github.cabaletta:baritone:1.2.14'*/
     /*compile 'cabaletta:baritone-api:1.2'*/
-    compileOnly 'com.google.code.gson:gson:2.8.0' // gson is included in mc 1.12.2, im just not sure what version
+    compileOnly 'com.google.code.gson:gson:2.10' // gson is included in mc 1.12.2, im just not sure what version
     /*compileOnly 'org.jetbrains:annotations:21.0.1'*/
     /*test scope*/
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0-M1'
